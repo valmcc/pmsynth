@@ -161,18 +161,20 @@ void ks_gen(struct ks *osc, float *out, size_t n);
 //-----------------------------------------------------------------------------
 // Waveguide synth
 
-#define WG_DELAY_BITS (7U)
+#define WG_DELAY_BITS (8U) //increased from 7
 #define WG_DELAY_SIZE (1U << WG_DELAY_BITS) // this is the max delay size
 
 struct wg {
 	float freq;		// base frequency
 	float delay_l[WG_DELAY_SIZE];		// left travelling wave
 	float delay_r[WG_DELAY_SIZE];		//right travelling wave
-	float k;		// attenuation and averaging constant 0 to 0.5
-	uint32_t epos; // excitation sample position
+	float r;		// reflection constant
+	uint32_t epos; // excitation sample position (in wavetable)
 	int estate; // excitement state (1 = excited, 0 = not)
 	uint32_t delay_len; // length of delay line
 	float delay_len_frac; // extra fractional delay length
+
+	float a; // all-pass filter coefficient
 
 	// pointer implementation uses pointers to array elements
 	// excitement location
@@ -204,7 +206,8 @@ struct wg {
 
 void wg_init(struct wg *osc);
 void wg_ctrl_frequency(struct wg *osc, float freq);
-void wg_ctrl_attenuate(struct wg *osc, float attenuate);
+void wg_ctrl_reflection(struct wg *osc, float reflection);
+void wg_ctrl_stiffness(struct wg *osc, float stiffness);
 void wg_excite(struct wg *osc);
 void wg_gen(struct wg *osc, float *out, size_t n);
 //
@@ -314,7 +317,7 @@ int event_wr(uint32_t type, void *ptr);
 // voices
 
 //#define VOICE_STATE_SIZE 1024
-#define VOICE_STATE_SIZE 2048
+#define VOICE_STATE_SIZE 4096
 // had to make this larger 
 
 struct voice {

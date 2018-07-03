@@ -252,8 +252,8 @@ int seq_init(struct seq *s) {
 	DBG("secs_per_block %08x\r\n", *(uint32_t *) & secs_per_block);
 
 	s->m0.prog = tune;
-	s->m0.s_state = S_STATE_RUN;
-	//s->m0.s_state = S_STATE_STOP;
+	//s->m0.s_state = S_STATE_RUN;
+	s->m0.s_state = S_STATE_STOP;
 
 	return 0;
 }

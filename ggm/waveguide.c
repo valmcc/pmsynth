@@ -24,7 +24,6 @@ Waveguide synth
 
 //-----------------------------------------------------------------------------
 
-#define REFLECTION_COEF -0.99f
 
 void wg_gen(struct wg *osc, float *out, size_t n) {
 	for (size_t i = 0; i < n; i++) {
@@ -36,38 +35,27 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 		}
 
-		//DBG("dl_1 ptr: %d dl_2 ptr:%d \r\n", osc->x_pos_l,osc->delay_len - osc->x_pos_l);
-		
 		// nut reflection 
 		osc->delay_r[osc->bridge_pos] = -1.0f * osc->delay_l[osc->nut_pos];
 		// bridge reflection
-		osc->delay_l[osc->bridge_pos] =  REFLECTION_COEF * osc->delay_r[osc->nut_pos];
-		
-		//DBG("nut ptr: %d bridge ptr:%d \r\n ---- \r\n", osc->nut_pos,osc->bridge_pos);
-		
-		//output
-		//DBG("left: %d %d %d %d %d \r\n", (int)osc->delay_l[0]*1000000.0F,(int)osc->delay_l[1]*1000000.0F,(int)osc->delay_l[2]*1000000.0F,(int)osc->delay_l[3]*1000000.0F,(int)osc->delay_l[4]*1000000.0F,(int)osc->delay_l[5]*1000000.0F);
-		//DBG("right: %d %d %d %d %d \r\n", (int)osc->delay_r[0]*1000000.0F,(int)osc->delay_r[1]*1000000.0F,(int)osc->delay_r[2]*1000000.0F,(int)osc->delay_r[3]*1000000.0F,(int)osc->delay_r[4]*1000000.0F,(int)osc->delay_r[5]*1000000.0F);
-		
-		//out[i] = 0.5f * (osc->delay_l[osc->x_pos_l] + osc->delay_r[osc->x_pos_r]);
-		
+		osc->delay_l[osc->bridge_pos] =  osc->r * osc->delay_r[osc->nut_pos];
 
-	    // all pass filter
-	    float prev_1 = osc->delay_l[osc->x_pos_l];
-	    osc->delay_l[osc->x_pos_l] = osc->ap_state_1 + (osc->ap_stiff * osc->delay_l[osc->x_pos_l]);
-	    osc->ap_state_1 = osc->delay_l[osc->x_pos_l] - (osc->ap_stiff * prev_1);
+		// all pass filter for stiffness (when used for pitch correction it changes the "stiffness")
+		osc->delay_l[osc->x_pos_l_2] = osc->a * osc->delay_l[osc->x_pos_l_2] +
+								osc->delay_l[osc->x_pos_l] -
+								osc->a * osc->delay_l[osc->x_pos_l];
 
-	    float prev_2 = osc->delay_r[osc->x_pos_r];
-	    osc->delay_r[osc->x_pos_r] = osc->ap_state_2 + (osc->ap_stiff * osc->delay_r[osc->x_pos_r]);
-	    osc->ap_state_2 = osc->delay_r[osc->x_pos_r] - (osc->ap_stiff * prev_2);
 
 		// with linear interp
-		float frac = (float) osc->delay_len_frac;
-		out[i] = 0.25f * (
-			(1.0f - frac) * osc->delay_l[osc->x_pos_l] + 
-			(frac) * osc->delay_l[osc->x_pos_l_2] + 
-			(1.0f - frac) * osc->delay_r[osc->x_pos_r] +
-			(frac) * osc->delay_r[osc->x_pos_r_2]) ;
+		float frac = (float) 1.0f - osc->delay_len_frac;
+		osc->delay_l[osc->x_pos_l] = (1.0f - frac) * osc->delay_l[osc->x_pos_l]+
+							(frac) * osc->delay_l[osc->x_pos_l_2];
+		osc->delay_r[osc->x_pos_r] = (1.0f - frac) * osc->delay_r[osc->x_pos_r]+
+							(frac) * osc->delay_r[osc->x_pos_r_2];
+
+		// added scaling factor for frac due to linear interp varying amplitudes
+		out[i] = 1.5f * (frac) * 0.5f * (osc->delay_l[osc->x_pos_l] + 
+			osc->delay_r[osc->x_pos_r]);
 
 
 		//stepping and wrapping pointers
@@ -119,6 +107,7 @@ void wg_excite(struct wg *osc) {
 	// line
 	osc->estate = 1;
 	osc->epos = 0;
+
 	// setting up the positions of the various parts of the delay line
 	//
 	// bridge                  pickup         exciter            nut
@@ -141,25 +130,37 @@ void wg_excite(struct wg *osc) {
 
 //-----------------------------------------------------------------------------
 
-void wg_ctrl_attenuate(struct wg *osc, float attenuate) {
-	osc->k = 0.5f * attenuate;
+void wg_ctrl_reflection(struct wg *osc, float reflection) {
+	osc->r = reflection;
 }
 
 void wg_ctrl_frequency(struct wg *osc, float freq) {
-	//freq = 6000;
 	osc->freq = freq;
 	float delay_len_total = (AUDIO_FS/freq/2)+1;
 	osc->delay_len = (uint32_t) delay_len_total; // delay line length
 	osc->delay_len_frac = delay_len_total - (float) osc->delay_len;
+
 	//osc->xstep = (uint32_t) (osc->freq * WG_FSCALE);
-	DBG("delay length: %d, freq: %d \r\n", osc->delay_len,(int)freq);
+	DBG("delay length: %d\r\n", osc->delay_len);
 }
+
+void wg_ctrl_stiffness(struct wg *osc, float stiffness) {
+	osc->a = stiffness;
+}
+
+/*void wg_ctrl_pickup_pos(struct wg *osc, float pickup_pos) {
+	osc->pp = pickup_pos;
+}
+
+
+void wg_ctrl_excite_pos(struct wg *osc, float excite_pos) {
+	osc->ep = excite_pos;
+}*/
 
 void wg_init(struct wg *osc) {
 	// setting all pass values
 	osc->ap_state_1 = 0.0f;
 	osc->ap_state_2 = 0.0f;
-	osc->ap_stiff = 0.98f;
 }
 
 //-----------------------------------------------------------------------------

@@ -27,7 +27,10 @@ struct p_state {
 	float vol;		// volume
 	float pan;		// left/right pan
 	float bend;		// pitch bend
-	float attenuate;
+	float reflection; // reflection (1 = perfect, 0 = no reflection)
+	float stiffness;
+	float pickup_pos;
+	float exciter_pos;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -42,10 +45,16 @@ static void ctrl_frequency(struct voice *v) {
 	wg_ctrl_frequency(&vs->wg, midi_to_frequency((float)v->note + ps->bend));
 }
 
-static void ctrl_attenuate(struct voice *v) {
+static void ctrl_reflection(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	wg_ctrl_attenuate(&vs->wg, ps->attenuate);
+	wg_ctrl_reflection(&vs->wg, ps->reflection);
+}
+
+static void ctrl_stiffness(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_stiffness(&vs->wg, ps->stiffness);
 }
 
 static void ctrl_pan(struct voice *v) {
@@ -67,7 +76,8 @@ static void start(struct voice *v) {
 	pan_init(&vs->pan);
 
 	ctrl_frequency(v);
-	ctrl_attenuate(v);
+	ctrl_reflection(v);
+	ctrl_stiffness(v);
 	ctrl_pan(v);
 }
 
@@ -79,9 +89,16 @@ static void stop(struct voice *v) {
 // note on
 static void note_on(struct voice *v, uint8_t vel) {
 	DBG("p7 note on v%d c%d n%d\r\n", v->idx, v->channel, v->note);
-	struct v_state *vs = (struct v_state *)v->state;
 	gpio_set(IO_LED_AMBER); // flash the led when a note comes in
+
+	// notes below C4 can't be processed as they make the delay line too large
+	if (v->note > 47){
+	struct v_state *vs = (struct v_state *)v->state;
 	wg_excite(&vs->wg);
+	
+	} else{
+		DBG("note too low to handle!");
+	}
 }
 
 // note off
@@ -111,7 +128,10 @@ static void init(struct patch *p) {
 	ps->vol = 1.0f;
 	ps->pan = 0.5f;
 	ps->bend = 0.0f;
-	ps->attenuate = -0.99f;
+	ps->reflection = -0.99f;
+	ps->stiffness = 1.0f;
+	//ps->pickup_pos = 1.0f;
+	//ps->exciter_pos = 1.0f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -130,8 +150,12 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 1;
 		break;
 	case 5:
-		ps->attenuate = midi_map(val, 0.87f, 1.f);
+		ps->reflection = midi_map(val, -0.95f, -1.0f);
 		update = 2;
+		break;
+	case 6:
+		ps->stiffness = midi_map(val, 0.0f, 1.0f);
+		update = 3;
 		break;
 	default:
 		break;
@@ -140,7 +164,10 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update_voices(p, ctrl_pan);
 	}
 	if (update == 2) {
-		update_voices(p, ctrl_attenuate);
+		update_voices(p, ctrl_reflection);
+	}
+	if (update == 3) {
+		update_voices(p, ctrl_stiffness);
 	}
 }
 
