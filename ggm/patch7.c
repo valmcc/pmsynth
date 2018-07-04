@@ -28,9 +28,10 @@ struct p_state {
 	float pan;		// left/right pan
 	float bend;		// pitch bend
 	float reflection; // reflection (1 = perfect, 0 = no reflection)
-	float stiffness;
-	float pickup_loc;
-	float exciter_loc;
+	float stiffness; // all pass filter stiffness (1 = not stiff, 0 = very)
+	float pickup_loc; // TODO
+	float exciter_loc; // loaction of pluck/strike on string
+	float brightness;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -69,6 +70,13 @@ static void ctrl_exciter_loc(struct voice *v) {
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 }
 
+static void ctrl_brightness(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_brightness(&vs->wg, ps->brightness);
+}
+
+
 //-----------------------------------------------------------------------------
 // voice operations
 
@@ -85,6 +93,7 @@ static void start(struct voice *v) {
 	ctrl_reflection(v);
 	ctrl_stiffness(v);
 	ctrl_pan(v);
+	ctrl_brightness(v);
 }
 
 // stop the patch
@@ -101,6 +110,8 @@ static void note_on(struct voice *v, uint8_t vel) {
 	if (v->note > 47){
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
+	// velocity
+	wg_set_velocity(&vs->wg, (float)vel / 127.f);
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 	wg_excite(&vs->wg);
 	
@@ -140,6 +151,7 @@ static void init(struct patch *p) {
 	ps->stiffness = 1.0f;
 	//ps->pickup_pos = 1.0f;
 	ps->exciter_loc = 0.25f;
+	ps->brightness = 1.0f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -169,6 +181,10 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->exciter_loc = midi_map(val, 0.0f, 0.5f);
 		update = 4;
 		break;
+	case 8:
+		ps->brightness = midi_map(val, 0.2f, 5.0f);
+		update = 5;
+		break;
 	default:
 		break;
 	}
@@ -183,6 +199,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	}
 	if (update == 4) {
 		update_voices(p, ctrl_exciter_loc);
+	}
+	if (update == 5) {
+		update_voices(p, ctrl_brightness);
 	}
 }
 

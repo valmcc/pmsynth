@@ -28,13 +28,15 @@ Waveguide synth
 void wg_gen(struct wg *osc, float *out, size_t n) {
 	for (size_t i = 0; i < n; i++) {
 		// pointer edition
+		float mallet_out = 0;
 		if (osc->estate == 1){
-			float mallet_out = mallet_gen(osc);			
+			mallet_out = mallet_gen(osc);		
 			osc->delay_l[osc->x_pos_l] += mallet_out;
 			osc->delay_r[osc->x_pos_r] += mallet_out;
-
+			//out[i] = mallet_out;
 		}
-
+			
+		//DBG("epos=%d, etate=%d, mallet_out=%d\r\n",osc->epos,osc->estate, (int) (mallet_out*1000));
 		// nut reflection 
 		osc->delay_r[osc->bridge_pos] = -1.0f * osc->delay_l[osc->nut_pos];
 		// bridge reflection
@@ -57,7 +59,7 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 
 		// added scaling factor for frac due to linear interp varying amplitudes
-		out[i] = 1.5f * (frac) * 0.5f * (osc->delay_l[osc->x_pos_l] + 
+		out[i] = ((osc->velocity) / 0.8f + 0.2f) * 0.75f * (frac) * (osc->delay_l[osc->x_pos_l] + 
 			osc->delay_r[osc->x_pos_r]);
 
 
@@ -155,15 +157,23 @@ void wg_ctrl_pos(struct wg *osc, float excite_loc) {
 	osc->excite_loc = excite_loc;
 	osc->excite_pos = excite_loc * osc->delay_len_total;
 	// needs to update position for current voices
-
-
 }
 
+void wg_ctrl_brightness(struct wg *osc, float brightness) {
+	osc->einc = brightness + osc->velocity * 0.3;
+	// brightness (speed of exciter pluck)
+}
+
+void wg_set_velocity(struct wg *osc, float velocity) {
+	osc->velocity = velocity;
+	// brightness (speed of exciter pluck)
+}
 
 void wg_init(struct wg *osc) {
 	// setting all pass values
 	osc->ap_state_1 = 0.0f;
 	osc->ap_state_2 = 0.0f;
+	//osc->einc = 0.5f;
 	//osc->excite_pos = 3;
 }
 
