@@ -29,8 +29,8 @@ struct p_state {
 	float bend;		// pitch bend
 	float reflection; // reflection (1 = perfect, 0 = no reflection)
 	float stiffness;
-	float pickup_pos;
-	float exciter_pos;
+	float pickup_loc;
+	float exciter_loc;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -61,6 +61,12 @@ static void ctrl_pan(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	pan_ctrl(&vs->pan, ps->vol, ps->pan);
+}
+
+static void ctrl_exciter_loc(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 }
 
 //-----------------------------------------------------------------------------
@@ -94,6 +100,8 @@ static void note_on(struct voice *v, uint8_t vel) {
 	// notes below C4 can't be processed as they make the delay line too large
 	if (v->note > 47){
 	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 	wg_excite(&vs->wg);
 	
 	} else{
@@ -131,7 +139,7 @@ static void init(struct patch *p) {
 	ps->reflection = -0.99f;
 	ps->stiffness = 1.0f;
 	//ps->pickup_pos = 1.0f;
-	//ps->exciter_pos = 1.0f;
+	ps->exciter_loc = 0.25f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -157,6 +165,10 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->stiffness = midi_map(val, 0.0f, 1.0f);
 		update = 3;
 		break;
+	case 7:
+		ps->exciter_loc = midi_map(val, 0.0f, 0.5f);
+		update = 4;
+		break;
 	default:
 		break;
 	}
@@ -168,6 +180,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	}
 	if (update == 3) {
 		update_voices(p, ctrl_stiffness);
+	}
+	if (update == 4) {
+		update_voices(p, ctrl_exciter_loc);
 	}
 }
 

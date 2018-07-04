@@ -48,10 +48,13 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 		// with linear interp
 		float frac = (float) 1.0f - osc->delay_len_frac;
+		//osc->delay_l[osc->x_pos_l] = (1.0f - frac) * osc->delay_l[osc->x_pos_l]+
+		//					(frac) * osc->delay_l[osc->x_pos_l_2];
 		osc->delay_l[osc->x_pos_l] = (1.0f - frac) * osc->delay_l[osc->x_pos_l]+
 							(frac) * osc->delay_l[osc->x_pos_l_2];
 		osc->delay_r[osc->x_pos_r] = (1.0f - frac) * osc->delay_r[osc->x_pos_r]+
 							(frac) * osc->delay_r[osc->x_pos_r_2];
+
 
 		// added scaling factor for frac due to linear interp varying amplitudes
 		out[i] = 1.5f * (frac) * 0.5f * (osc->delay_l[osc->x_pos_l] + 
@@ -115,7 +118,7 @@ void wg_excite(struct wg *osc) {
 	// ------------------------------------------------------------
 	//
 	//
-	osc->excite_pos = 3;
+	//osc->excite_pos = 3;
 	osc->x_pos_l = osc->excite_pos;
 	osc->x_pos_r = osc->delay_len - osc->excite_pos;
 	osc->x_pos_l_2 = osc->x_pos_l + 1;
@@ -136,9 +139,9 @@ void wg_ctrl_reflection(struct wg *osc, float reflection) {
 
 void wg_ctrl_frequency(struct wg *osc, float freq) {
 	osc->freq = freq;
-	float delay_len_total = (AUDIO_FS/freq/2)+1;
-	osc->delay_len = (uint32_t) delay_len_total; // delay line length
-	osc->delay_len_frac = delay_len_total - (float) osc->delay_len;
+	osc->delay_len_total = (AUDIO_FS/freq/2)+1;
+	osc->delay_len = (uint32_t) osc->delay_len_total; // delay line length
+	osc->delay_len_frac = osc->delay_len_total - (float) osc->delay_len;
 
 	//osc->xstep = (uint32_t) (osc->freq * WG_FSCALE);
 	DBG("delay length: %d\r\n", osc->delay_len);
@@ -148,19 +151,20 @@ void wg_ctrl_stiffness(struct wg *osc, float stiffness) {
 	osc->a = stiffness;
 }
 
-/*void wg_ctrl_pickup_pos(struct wg *osc, float pickup_pos) {
-	osc->pp = pickup_pos;
+void wg_ctrl_pos(struct wg *osc, float excite_loc) {
+	osc->excite_loc = excite_loc;
+	osc->excite_pos = excite_loc * osc->delay_len_total;
+	// needs to update position for current voices
+
+
 }
 
-
-void wg_ctrl_excite_pos(struct wg *osc, float excite_pos) {
-	osc->ep = excite_pos;
-}*/
 
 void wg_init(struct wg *osc) {
 	// setting all pass values
 	osc->ap_state_1 = 0.0f;
 	osc->ap_state_2 = 0.0f;
+	//osc->excite_pos = 3;
 }
 
 //-----------------------------------------------------------------------------

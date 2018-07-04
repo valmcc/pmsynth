@@ -173,12 +173,15 @@ struct wg {
 	int estate; // excitement state (1 = excited, 0 = not)
 	uint32_t delay_len; // length of delay line
 	float delay_len_frac; // extra fractional delay length
+	float delay_len_total; // total fractional delay length
 
 	float a; // all-pass filter coefficient
 
 	// pointer implementation uses pointers to array elements
 	// excitement location
 	uint32_t excite_pos;
+
+	float excite_loc; // percentage location of exciter
 
 	// pointers for delay line
 	uint32_t x_pos_l;
@@ -208,6 +211,7 @@ void wg_init(struct wg *osc);
 void wg_ctrl_frequency(struct wg *osc, float freq);
 void wg_ctrl_reflection(struct wg *osc, float reflection);
 void wg_ctrl_stiffness(struct wg *osc, float stiffness);
+void wg_ctrl_pos(struct wg *osc, float excite_loc);
 void wg_excite(struct wg *osc);
 void wg_gen(struct wg *osc, float *out, size_t n);
 //
