@@ -1572,12 +1572,15 @@ float mallet_lookup(int16_t x) {
 
 float mallet_gen(struct wg *osc) {
 	//"speed" is osc->espeed
-	// could change these from floats for more speed
+	// now in integers for speed (surprise! no performance increase here!)
 	if (osc->epos <= MALLET_LUT_MASK) {
 		osc->ephase = osc->ephase + osc->einc;
-		if (osc->ephase > 1){
-			osc->epos += (uint32_t) osc->ephase;
-			osc->ephase = osc->ephase - (uint32_t) osc->ephase;
+		if (osc->ephase > 510){
+			osc->epos += 2;
+			osc->ephase = osc->ephase - 510;	
+		}else if (osc->ephase > 255){
+			osc->epos += 1;
+			osc->ephase = osc->ephase - 255;	
 		}
 
 	} else {

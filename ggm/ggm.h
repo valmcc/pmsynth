@@ -171,8 +171,8 @@ struct wg {
 	float r;		// reflection constant
 	uint32_t epos; // excitation sample position (in wavetable)
 	int estate; // excitement state (1 = excited, 0 = not)
-	float einc; //how much to increment exciter sample pointer
-	float ephase; //phase for increment exciter sample pointer
+	uint16_t einc; //how much to increment exciter sample pointer
+	uint16_t ephase; //phase for increment exciter sample pointer
 
 	uint32_t delay_len; // length of delay line
 	float delay_len_frac; // extra fractional delay length
@@ -210,6 +210,10 @@ struct wg {
 
 	float velocity;
 
+	// downsampling by halving the length of the delay line
+
+	uint32_t downsample_amt;
+
 };
 
 void wg_init(struct wg *osc);
@@ -221,6 +225,7 @@ void wg_ctrl_brightness(struct wg *osc, float brightness);
 void wg_excite(struct wg *osc);
 void wg_set_velocity(struct wg *osc, float velocity);
 void wg_gen(struct wg *osc, float *out, size_t n);
+void wg_set_samplerate(struct wg *osc, float downsample_amt);
 //
 //--
 //exciter

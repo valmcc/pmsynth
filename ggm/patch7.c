@@ -43,6 +43,12 @@ _Static_assert(sizeof(struct p_state) <= PATCH_STATE_SIZE, "sizeof(struct p_stat
 static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
+	if (v->note < 47){
+	wg_set_samplerate(&vs->wg,2); // halve sample rate
+	}
+	if (v->note < 33){
+	wg_set_samplerate(&vs->wg,4); // quarter sample rate
+	}
 	wg_ctrl_frequency(&vs->wg, midi_to_frequency((float)v->note + ps->bend));
 }
 
@@ -105,11 +111,13 @@ static void stop(struct voice *v) {
 static void note_on(struct voice *v, uint8_t vel) {
 	DBG("p7 note on v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	gpio_set(IO_LED_AMBER); // flash the led when a note comes in
-
-	// notes below C4 can't be processed as they make the delay line too large
-	if (v->note > 47){
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
+
+	
+	// notes below C2 can't be processed as they make the delay line too large
+	if (v->note > 24){
+
 	// velocity
 	wg_set_velocity(&vs->wg, (float)vel / 127.f);
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
@@ -182,7 +190,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 4;
 		break;
 	case 8:
-		ps->brightness = midi_map(val, 0.2f, 5.0f);
+		ps->brightness = midi_map(val, 0.2f, 1.0f);
 		update = 5;
 		break;
 	default:
