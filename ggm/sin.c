@@ -1562,7 +1562,7 @@ const int16_t mallet_hit_LUT_data[MALLET_LUT_SIZE] = {
 
 
 #define LUT_SCALE (1.f/(float)(1U << 16))
-#define MALLET_LUT_MASK MALLET_LUT_SIZE-4 // de-popping
+#define MALLET_LUT_MASK 1000//MALLET_LUT_SIZE-4 // de-popping
 
 
 float mallet_lookup(int16_t x) {
@@ -1576,10 +1576,10 @@ float mallet_gen(struct wg *osc) {
 	if (osc->epos <= MALLET_LUT_MASK) {
 		osc->ephase = osc->ephase + osc->einc;
 		if (osc->ephase > 510){
-			osc->epos += 2;
+			osc->epos += osc->downsample_amt * 2;
 			osc->ephase = osc->ephase - 510;	
 		}else if (osc->ephase > 255){
-			osc->epos += 1;
+			osc->epos += osc->downsample_amt;
 			osc->ephase = osc->ephase - 255;	
 		}
 

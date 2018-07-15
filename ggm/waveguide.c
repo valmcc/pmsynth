@@ -37,7 +37,7 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 				osc->delay_r[osc->x_pos_r] += mallet_out;
 				//out[i] = mallet_out;
 			}
-				
+
 			//DBG("epos=%d, etate=%d, mallet_out=%d\r\n",osc->epos,osc->estate, (int) (mallet_out*1000));
 			// nut reflection 
 			osc->delay_r[osc->bridge_pos] = -osc->delay_l[osc->nut_pos];
@@ -134,6 +134,7 @@ void wg_excite(struct wg *osc) {
 
 }
 
+
 //-----------------------------------------------------------------------------
 
 void wg_ctrl_reflection(struct wg *osc, float reflection) {
@@ -145,7 +146,7 @@ void wg_ctrl_frequency(struct wg *osc, float freq) {
 	osc->delay_len_total = (AUDIO_FS/freq/2.0f/osc->downsample_amt)+1;
 	osc->delay_len = (uint32_t) osc->delay_len_total; // delay line length
 	osc->delay_len_frac = osc->delay_len_total - (float) osc->delay_len;
-	DBG("delay length: %d\r\n", osc->delay_len);
+	//DBG("delay length: %d\r\n", osc->delay_len);
 }
 
 void wg_ctrl_stiffness(struct wg *osc, float stiffness) {
@@ -160,7 +161,7 @@ void wg_ctrl_pos(struct wg *osc, float excite_loc) {
 
 void wg_ctrl_brightness(struct wg *osc, float brightness) {
 	osc->einc = (uint16_t) ((brightness + osc->velocity * 0.3f)*255.0f);
-	DBG("einc: %d\r\n", osc->einc);
+	//DBG("einc: %d\r\n", osc->einc);
 	// brightness (speed of exciter pluck)
 }
 

@@ -3,7 +3,7 @@
 
 Patch 7
 
-Waveguide synth
+1-D Waveguide synth
 
 */
 //-----------------------------------------------------------------------------
@@ -32,6 +32,7 @@ struct p_state {
 	float pickup_loc; // TODO
 	float exciter_loc; // loaction of pluck/strike on string
 	float brightness;
+	float release;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -44,10 +45,10 @@ static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	if (v->note < 47){
-	wg_set_samplerate(&vs->wg,2); // halve sample rate
+		wg_set_samplerate(&vs->wg,2); // halve sample rate
 	}
 	if (v->note < 33){
-	wg_set_samplerate(&vs->wg,4); // quarter sample rate
+		wg_set_samplerate(&vs->wg,4); // quarter sample rate
 	}
 	wg_ctrl_frequency(&vs->wg, midi_to_frequency((float)v->note + ps->bend));
 }
@@ -81,6 +82,7 @@ static void ctrl_brightness(struct voice *v) {
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	wg_ctrl_brightness(&vs->wg, ps->brightness);
 }
+
 
 
 //-----------------------------------------------------------------------------
@@ -117,9 +119,13 @@ static void note_on(struct voice *v, uint8_t vel) {
 	
 	// notes below C2 can't be processed as they make the delay line too large
 	if (v->note > 24){
-
+	// reflection
+	wg_ctrl_reflection(&vs->wg,ps->reflection);
 	// velocity
 	wg_set_velocity(&vs->wg, (float)vel / 127.f);
+	// stiffness
+	wg_ctrl_brightness(&vs->wg,ps->brightness);
+	// position
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 	wg_excite(&vs->wg);
 	
@@ -131,6 +137,9 @@ static void note_on(struct voice *v, uint8_t vel) {
 // note off
 static void note_off(struct voice *v, uint8_t vel) {
 	gpio_clr(IO_LED_AMBER);
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_reflection(&vs->wg,ps->reflection + ps->release); // TODO (release)
 
 }
 
@@ -156,6 +165,7 @@ static void init(struct patch *p) {
 	ps->pan = 0.5f;
 	ps->bend = 0.0f;
 	ps->reflection = -0.99f;
+	ps->release = 0.0f;
 	ps->stiffness = 1.0f;
 	//ps->pickup_pos = 1.0f;
 	ps->exciter_loc = 0.25f;
@@ -190,8 +200,12 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 4;
 		break;
 	case 8:
-		ps->brightness = midi_map(val, 0.2f, 1.0f);
+		ps->brightness = midi_map(val, 0.05f, 1.0f);
 		update = 5;
+		break;
+	case 9:
+		ps->release = midi_map(val, 0.1f, 0.0f);
+		update = 6;
 		break;
 	default:
 		break;

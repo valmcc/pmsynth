@@ -213,6 +213,8 @@ struct wg {
 	// downsampling by halving the length of the delay line
 
 	uint32_t downsample_amt;
+	float lp_coef_a;
+	float lp_coef_b;
 
 };
 
