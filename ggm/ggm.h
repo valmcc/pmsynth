@@ -213,8 +213,10 @@ struct wg {
 	// downsampling by halving the length of the delay line
 
 	uint32_t downsample_amt;
-	float lp_coef_a;
+	float lp_coef_a; //not implemented - for breath
 	float lp_coef_b;
+
+	int tube; //positive or negative reflection?
 
 };
 
@@ -228,12 +230,52 @@ void wg_excite(struct wg *osc);
 void wg_set_velocity(struct wg *osc, float velocity);
 void wg_gen(struct wg *osc, float *out, size_t n);
 void wg_set_samplerate(struct wg *osc, float downsample_amt);
+void wg_exciter_type(struct wg *osc, int exciter_type);
 //
 //--
 //exciter
 
 float mallet_lookup(int16_t x);
 float mallet_gen(struct wg *osc);
+//-----------------------------------------------------------------------------
+// 2D waveguide
+
+#define MESH_LENGTH 8 
+#define MESH_WIDTH 8
+
+struct junction {
+	float vJ; // junction velocity
+	float vN; // velocity going north into junction
+	float vS; // velocity going south into junction
+	float vE; // velocity going east into junction
+	float vW; // velocity going west into junction
+	float vN1; // temp variables
+	float vS1;
+	float vE1;
+	float vW1;
+};
+
+struct wg_2d {
+	float freq;		// base frequency
+	float delay[KS_DELAY_SIZE];
+	float k;		// attenuation and averaging constant 0 to 0.5
+	uint32_t x;		// phase position
+	uint32_t xstep;		// phase step per sample
+	struct junction mesh[MESH_LENGTH][MESH_WIDTH];
+
+	int estate; // excitement state (1 = excited, 0 = not)
+	uint32_t epos; // excitation sample position (in wavetable)
+	uint16_t einc; //how much to increment exciter sample pointer
+	uint16_t ephase; //phase for increment exciter sample pointer
+};
+
+void wg_2d_init(struct wg_2d *osc);
+void wg_2d_ctrl_frequency(struct wg_2d *osc, float freq);
+void wg_2d_ctrl_attenuate(struct wg_2d *osc, float attenuate);
+void wg_2d_pluck(struct wg_2d *osc);
+void wg_2d_gen(struct wg_2d *osc, float *out, size_t n);
+// exciter
+float mallet_gen_2d(struct wg_2d *osc);
 
 
 //-----------------------------------------------------------------------------
@@ -385,11 +427,12 @@ extern const struct patch_ops patch4;
 extern const struct patch_ops patch5;
 extern const struct patch_ops patch6;
 extern const struct patch_ops patch7;
+extern const struct patch_ops patch8;
 
 //-----------------------------------------------------------------------------
 
 // number of simultaneous voices
-#define NUM_VOICES 16
+#define NUM_VOICES 12 // changed to 12 from 16 for reduced underruns
 // number of concurrent channels
 #define NUM_CHANNELS 16
 

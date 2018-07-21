@@ -3,7 +3,7 @@
 
 Patch 7
 
-1-D Waveguide synth
+1-D Waveguide synth (string)
 
 */
 //-----------------------------------------------------------------------------
@@ -12,6 +12,8 @@ Patch 7
 #include <string.h>
 
 #include "ggm.h"
+#include "display.h"
+
 
 #define DEBUG
 #include "logging.h"
@@ -33,6 +35,8 @@ struct p_state {
 	float exciter_loc; // loaction of pluck/strike on string
 	float brightness;
 	float release;
+	int exciter_type;
+	int screen_state;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -44,7 +48,7 @@ _Static_assert(sizeof(struct p_state) <= PATCH_STATE_SIZE, "sizeof(struct p_stat
 static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	if (v->note < 47){
+	if (v->note < 57){
 		wg_set_samplerate(&vs->wg,2); // halve sample rate
 	}
 	if (v->note < 33){
@@ -83,6 +87,30 @@ static void ctrl_brightness(struct voice *v) {
 	wg_ctrl_brightness(&vs->wg, ps->brightness);
 }
 
+static void ctrl_exciter_type(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	if (ps->exciter_type > 1){
+		ps->exciter_type = 0;
+	}
+	
+	if (ps->screen_state != ps-> exciter_type){
+		switch(ps->exciter_type){
+			case 0: //struck string
+				term_print(&ggm_display.term, "       Struck String\n",4);
+				ps->screen_state = 0;
+				break;
+			case 1: // struck tube
+				term_print(&ggm_display.term, "       Struck Tube\n",4);
+				ps->screen_state = 1;
+				break;
+			default:
+				break;
+		}
+	}
+	wg_exciter_type(&vs->wg, ps->exciter_type);
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -102,6 +130,7 @@ static void start(struct voice *v) {
 	ctrl_stiffness(v);
 	ctrl_pan(v);
 	ctrl_brightness(v);
+	ctrl_exciter_type(v);
 }
 
 // stop the patch
@@ -179,32 +208,35 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	DBG("p7 ctrl %d val %d\r\n", ctrl, val);
 
 	switch (ctrl) {
-	case 1:		// volume
+	case 75:		// volume
 		ps->vol = midi_map(val, 0.f, 1.5f);
 		update = 1;
 		break;
-	case 2:		// left/right pan
+	case 72:		// left/right pan
 		ps->pan = midi_map(val, 0.f, 1.f);
 		update = 1;
 		break;
-	case 5:
+	case 91:
 		ps->reflection = midi_map(val, -0.95f, -1.0f);
 		update = 2;
 		break;
-	case 6:
+	case 93:
 		ps->stiffness = midi_map(val, 0.0f, 1.0f);
 		update = 3;
 		break;
-	case 7:
-		ps->exciter_loc = midi_map(val, 0.0f, 0.5f);
+	case 74:
+		ps->exciter_loc = midi_map(val, 0.08f, 0.5f);
 		update = 4;
 		break;
-	case 8:
+	case 71:
 		ps->brightness = midi_map(val, 0.05f, 1.0f);
 		update = 5;
 		break;
-	case 9:
+	case 73:
 		ps->release = midi_map(val, 0.1f, 0.0f);
+		break;
+	case 96:
+		ps->exciter_type += 1;
 		update = 6;
 		break;
 	default:
@@ -225,6 +257,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	if (update == 5) {
 		update_voices(p, ctrl_brightness);
 	}
+	if (update == 6) {
+		update_voices(p, ctrl_exciter_type);
+	}
 }
 
 static void pitch_wheel(struct patch *p, uint16_t val) {
@@ -233,6 +268,7 @@ static void pitch_wheel(struct patch *p, uint16_t val) {
 	ps->bend = midi_pitch_bend(val);
 	update_voices(p, ctrl_frequency);
 }
+
 
 //-----------------------------------------------------------------------------
 

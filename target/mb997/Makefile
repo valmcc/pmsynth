@@ -68,13 +68,15 @@ SRC += $(GGM_DIR)/sin.c \
 	$(GGM_DIR)/patch6.c \
 	$(GGM_DIR)/patch7.c \
 	$(GGM_DIR)/waveguide.c \
+	$(GGM_DIR)/patch8.c \
+	$(GGM_DIR)/waveguide2d.c \
 
 # ui
 UI_DIR = $(TOP)/ui
 SRC += $(UI_DIR)/fonts.c \
 	$(UI_DIR)/term.c \
 	$(UI_DIR)/graphics.c \
-	$(UI_DIR)/profont29.c \
+	$(UI_DIR)/profont22.c \
 
 OBJ = $(patsubst %.c, %.o, $(SRC))
 OBJ += $(TARGET_DIR)/start.o

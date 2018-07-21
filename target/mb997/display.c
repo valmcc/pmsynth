@@ -59,16 +59,19 @@ static struct term_cfg term_cfg = {
 	.font = 0,
 	.lines = 11,
 	.yofs = 0,
-	.bg = LCD_COLOR_NAVY,
+	.bg = LCD_COLOR_BLACK,
 	.fg = LCD_COLOR_WHITE,
 };
 
 //-----------------------------------------------------------------------------
 
 static void term_test(struct term_drv *drv) {
-	term_print(drv, "hello there!\n");
-	term_print(drv, "how we doin?\n");
+	term_print(drv, "_______________________________\n",1);
+	term_print(drv, "       1D Waveguide\n",2);
+	term_print(drv, "_______________________________\n",3);
+	term_print(drv, "       Struck String\n",4);
 }
+
 
 //-----------------------------------------------------------------------------
 

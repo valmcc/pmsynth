@@ -14,14 +14,8 @@ Waveguide synth
 
 //-----------------------------------------------------------------------------
 
-// frequency to x scaling (xrange/fs)
-#define WG_FSCALE ((float)(1ULL << 32) / AUDIO_FS)
-
-#define WG_DELAY_MASK (WG_DELAY_SIZE - 1)
-#define WG_FRAC_BITS (32U - WG_DELAY_BITS)
-#define WG_FRAC_MASK ((1U << WG_FRAC_BITS) - 1)
-#define WG_FRAC_SCALE (float)(1.f / (float)(1ULL << WG_FRAC_BITS))
-
+// location of pickup (where the output is extracted from the delay line)
+#define WG_PICKUP_POS 4
 
 //-----------------------------------------------------------------------------
 
@@ -40,7 +34,7 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 			//DBG("epos=%d, etate=%d, mallet_out=%d\r\n",osc->epos,osc->estate, (int) (mallet_out*1000));
 			// nut reflection 
-			osc->delay_r[osc->bridge_pos] = -osc->delay_l[osc->nut_pos];
+			osc->delay_r[osc->bridge_pos] = osc->tube * osc->delay_l[osc->nut_pos];
 			// bridge reflection
 			osc->delay_l[osc->bridge_pos] =  osc->r * osc->delay_r[osc->nut_pos];
 
@@ -128,7 +122,7 @@ void wg_excite(struct wg *osc) {
 	osc->x_pos_r_2 = osc->x_pos_r + 1;
 	osc->bridge_pos = osc->delay_len;
 	osc->nut_pos = 0;
-	osc->pickup_pos = 4;
+	osc->pickup_pos = WG_PICKUP_POS;
 
 
 
@@ -172,6 +166,20 @@ void wg_set_velocity(struct wg *osc, float velocity) {
 
 void wg_set_samplerate(struct wg *osc, float downsample_amt) {
 	osc->downsample_amt = downsample_amt;
+}
+
+void wg_exciter_type(struct wg *osc, int exciter_type) {
+	switch(exciter_type){
+		case 0: //struck string
+			osc->tube = -1;
+			break;
+		case 1: // struck tube
+			osc->tube = 1;
+			break;
+		default:
+			break;
+	}
+
 }
 
 void wg_init(struct wg *osc) {

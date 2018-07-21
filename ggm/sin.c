@@ -1562,7 +1562,7 @@ const int16_t mallet_hit_LUT_data[MALLET_LUT_SIZE] = {
 
 
 #define LUT_SCALE (1.f/(float)(1U << 16))
-#define MALLET_LUT_MASK 1000//MALLET_LUT_SIZE-4 // de-popping
+#define MALLET_LUT_MASK MALLET_LUT_SIZE-4 // de-popping
 
 
 float mallet_lookup(int16_t x) {
@@ -1583,6 +1583,21 @@ float mallet_gen(struct wg *osc) {
 			osc->ephase = osc->ephase - 255;	
 		}
 
+	} else {
+		osc->estate = 0; 
+		osc->epos = 0; 
+		// if it passes the end of the sample
+		// it is no longer in the excitement state
+	}
+	return mallet_lookup(osc->epos);
+	// step one data point along the sample
+}
+
+float mallet_gen_2d(struct wg_2d *osc) {
+	//"speed" is osc->espeed
+	// now in integers for speed (surprise! no performance increase here!)
+	if (osc->epos <= MALLET_LUT_MASK) {
+			osc->epos += 1;
 	} else {
 		osc->estate = 0; 
 		osc->epos = 0; 

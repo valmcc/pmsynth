@@ -59,7 +59,7 @@ struct term_drv {
 };
 
 int term_init(struct term_drv *drv, struct term_cfg *cfg);
-void term_print(struct term_drv *drv, char *str);
+void term_print(struct term_drv *drv, char *str, uint8_t line);
 
 //-----------------------------------------------------------------------------
 // graphics

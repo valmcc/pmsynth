@@ -30,7 +30,7 @@ int term_init(struct term_drv *drv, struct term_cfg *cfg) {
 //-----------------------------------------------------------------------------
 
 // Print a string at the current cursor position.
-void term_print(struct term_drv *drv, char *str) {
+void term_print(struct term_drv *drv, char *str, uint8_t curr_line) {
 	for (size_t i = 0; i < strlen(str); i++) {
 		if (str[i] == '\n') {
 			// Process the CR when we see the next character.
@@ -39,12 +39,7 @@ void term_print(struct term_drv *drv, char *str) {
 		} else {
 			// handle the previous CR
 			if (drv->cr_flag) {
-				// increment the line
-				drv->line += 1;
-				if (drv->line == drv->cfg.lines) {
-					drv->scrolling = 1;
-					drv->line = 0;
-				}
+				drv->line = curr_line;
 				// set the cursor
 				drv->x = 0;
 				drv->y = drv->y0 + (drv->line * drv->dy);
