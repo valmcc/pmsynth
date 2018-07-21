@@ -13,6 +13,7 @@ Patch 7
 
 #include "ggm.h"
 #include "display.h"
+#include "lcd.h"
 
 
 #define DEBUG
@@ -93,11 +94,12 @@ static void ctrl_exciter_type(struct voice *v) {
 	if (ps->exciter_type > 1){
 		ps->exciter_type = 0;
 	}
-	
+
 	if (ps->screen_state != ps-> exciter_type){
 		switch(ps->exciter_type){
 			case 0: //struck string
 				term_print(&ggm_display.term, "       Struck String\n",4);
+				//lcd_draw_bitmap(drv->cfg.lcd, bx, by, g->width, g->height, drv->cfg.fg, drv->cfg.bg, g->data);
 				ps->screen_state = 0;
 				break;
 			case 1: // struck tube
@@ -238,6 +240,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	case 96:
 		ps->exciter_type += 1;
 		update = 6;
+		break;
+	case 97:
+		current_patch_no += 1; // increment to next patch
 		break;
 	default:
 		break;

@@ -26,6 +26,11 @@ GooGooMuck Synthesizer
 #define INV_TAU (1.f/TAU)
 
 //-----------------------------------------------------------------------------
+// global variables
+int current_patch_no; // what midi channel patch is currently playing
+
+
+//-----------------------------------------------------------------------------
 // benchmarks
 
 void pow_benchmark(void);
@@ -173,49 +178,26 @@ struct wg {
 	int estate; // excitement state (1 = excited, 0 = not)
 	uint16_t einc; //how much to increment exciter sample pointer
 	uint16_t ephase; //phase for increment exciter sample pointer
-
 	uint32_t delay_len; // length of delay line
 	float delay_len_frac; // extra fractional delay length
 	float delay_len_total; // total fractional delay length
-
 	float a; // all-pass filter coefficient
-
-	// pointer implementation uses pointers to array elements
-	// excitement location
-	uint32_t excite_pos;
-
+	uint32_t excite_pos;// excitement location
 	float excite_loc; // percentage location of exciter
-
-	// pointers for delay line
-	uint32_t x_pos_l;
-	uint32_t x_pos_r;
-
-	// edge condition locations
-	uint32_t bridge_pos;
-	uint32_t nut_pos;
-
-	// pickup location
-	uint32_t pickup_pos;
-
-	// pointers to delay line for linear interpolation
-	uint32_t x_pos_l_2;
-	uint32_t x_pos_r_2;
-
-	// all pass filter previous values
-	float ap_state_1;
-	float ap_state_2;
-
-	// all pass filter "stiffness"
-	float ap_stiff;
-
+	uint32_t x_pos_l; // pointers for delay line
+	uint32_t x_pos_r; // pointers for delay line
+	uint32_t bridge_pos; // edge condition locations
+	uint32_t nut_pos; // edge condition locations
+	uint32_t pickup_pos; // pickup location
+	uint32_t x_pos_l_2; // pointers to delay line for linear interpolation
+	uint32_t x_pos_r_2; // pointers to delay line for linear interpolation
+	float ap_state_1; // all pass filter previous values
+	float ap_state_2; // all pass filter previous values
+	float ap_stiff; // all pass filter "stiffness"
 	float velocity;
-
-	// downsampling by halving the length of the delay line
-
-	uint32_t downsample_amt;
-	float lp_coef_a; //not implemented - for breath
+	uint32_t downsample_amt; // downsampling by halving the length of the delay line
+	float lp_coef_a; //not implemented - for breath control
 	float lp_coef_b;
-
 	int tube; //positive or negative reflection?
 
 };
@@ -232,7 +214,7 @@ void wg_gen(struct wg *osc, float *out, size_t n);
 void wg_set_samplerate(struct wg *osc, float downsample_amt);
 void wg_exciter_type(struct wg *osc, int exciter_type);
 //
-//--
+//-----------------------------------------------------------------------------
 //exciter
 
 float mallet_lookup(int16_t x);

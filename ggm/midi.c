@@ -69,7 +69,8 @@ float midi_to_frequency(float note) {
 
 // process a midi note off event
 static void midi_note_off(struct midi_rx *midi) {
-	uint8_t chan = midi->status & 0xf;
+	//uint8_t chan = midi->status & 0xf;
+	uint8_t chan = current_patch_no;
 	uint8_t note = midi->arg0;
 	uint8_t vel = midi->arg1;
 	//DBG("note off ch %d note %d vel %d\r\n", chan, note, vel);
@@ -81,7 +82,8 @@ static void midi_note_off(struct midi_rx *midi) {
 
 // process a midi note on event
 static void midi_note_on(struct midi_rx *midi) {
-	uint8_t chan = midi->status & 0xf;
+	//uint8_t chan = midi->status & 0xf;
+	uint8_t chan = current_patch_no;
 	uint8_t note = midi->arg0;
 	uint8_t vel = midi->arg1;
 	if (vel == 0) {
@@ -101,7 +103,8 @@ static void midi_note_on(struct midi_rx *midi) {
 
 // process a midi control change
 static void midi_control_change(struct midi_rx *midi) {
-	uint8_t chan = midi->status & 0xf;
+	//uint8_t chan = midi->status & 0xf; // this determines which patch is playing
+	uint8_t chan = current_patch_no;
 	uint8_t ctrl = midi->arg0;
 	uint8_t val = midi->arg1;
 	if (ctrl >= 120) {
@@ -118,7 +121,8 @@ static void midi_control_change(struct midi_rx *midi) {
 
 // process a midi pitch wheel change
 static void midi_pitch_wheel(struct midi_rx *midi) {
-	uint8_t chan = midi->status & 0xf;
+	//uint8_t chan = midi->status & 0xf;
+	uint8_t chan = current_patch_no;
 	uint16_t val = (midi->arg1 << 7) | midi->arg0;
 	//DBG("pitch wheel ch %d val %d\r\n", chan, val);
 	struct patch *p = &midi->ggm->patches[chan];
