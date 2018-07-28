@@ -3,7 +3,7 @@
 
 Events
 
-The main loop of GGM is an event processor. Events are generated asynchronously
+The main loop is an event processor. Events are generated asynchronously
 by the world. E.g a request to fill the audio buffer with samples, a midi event,
 a key down event, etc. The event loop branches to a function to handle the event.
 There is no priority, we just service events as they arrive.

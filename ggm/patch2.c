@@ -15,7 +15,7 @@ Karplus Strong Testing
 
 #define DEBUG
 #include "logging.h"
-//#include "display.h"
+#include "display.h"
 
 //-----------------------------------------------------------------------------
 
@@ -133,6 +133,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	case 5:
 		ps->attenuate = midi_map(val, 0.87f, 1.f);
 		update = 2;
+		break;
+	case 97:
+		current_patch_no -= 1; // increment to next patch
+		term_print(&ggm_display.term, "       1D Waveguide\n",2);
+		term_print(&ggm_display.term, "       Struck String\n",4);
 		break;
 	default:
 		break;

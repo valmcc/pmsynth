@@ -70,6 +70,8 @@ SRC += $(GGM_DIR)/sin.c \
 	$(GGM_DIR)/waveguide.c \
 	$(GGM_DIR)/patch8.c \
 	$(GGM_DIR)/waveguide2d.c \
+	$(GGM_DIR)/patch9.c \
+	$(GGM_DIR)/woodwind.c \
 
 # ui
 UI_DIR = $(TOP)/ui

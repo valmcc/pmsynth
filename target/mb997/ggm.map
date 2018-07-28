@@ -174,14 +174,29 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 ../../ggm/patch5.o
  .data          0x0000000000000000        0x0 ../../ggm/patch6.o
  .bss           0x0000000000000000        0x0 ../../ggm/patch6.o
+ .text          0x0000000000000000      0x458 ../../ggm/patch7.o
  .data          0x0000000000000000        0x0 ../../ggm/patch7.o
  .bss           0x0000000000000000        0x0 ../../ggm/patch7.o
+ .rodata        0x0000000000000000       0x24 ../../ggm/patch7.o
+ .rodata.str1.4
+                0x0000000000000000       0xe3 ../../ggm/patch7.o
+ .comment       0x0000000000000000       0x7f ../../ggm/patch7.o
+ .ARM.attributes
+                0x0000000000000000       0x39 ../../ggm/patch7.o
+ .text          0x0000000000000000      0x36c ../../ggm/waveguide.o
  .data          0x0000000000000000        0x0 ../../ggm/waveguide.o
  .bss           0x0000000000000000        0x0 ../../ggm/waveguide.o
+ .comment       0x0000000000000000       0x7f ../../ggm/waveguide.o
+ .ARM.attributes
+                0x0000000000000000       0x39 ../../ggm/waveguide.o
  .data          0x0000000000000000        0x0 ../../ggm/patch8.o
  .bss           0x0000000000000000        0x0 ../../ggm/patch8.o
  .data          0x0000000000000000        0x0 ../../ggm/waveguide2d.o
  .bss           0x0000000000000000        0x0 ../../ggm/waveguide2d.o
+ .data          0x0000000000000000        0x0 ../../ggm/patch9.o
+ .bss           0x0000000000000000        0x0 ../../ggm/patch9.o
+ .data          0x0000000000000000        0x0 ../../ggm/woodwind.o
+ .bss           0x0000000000000000        0x0 ../../ggm/woodwind.o
  .data          0x0000000000000000        0x0 ../../ui/fonts.o
  .bss           0x0000000000000000        0x0 ../../ui/fonts.o
  .data          0x0000000000000000        0x0 ../../ui/term.o
@@ -337,6 +352,8 @@ LOAD ../../ggm/patch7.o
 LOAD ../../ggm/waveguide.o
 LOAD ../../ggm/patch8.o
 LOAD ../../ggm/waveguide2d.o
+LOAD ../../ggm/patch9.o
+LOAD ../../ggm/woodwind.o
 LOAD ../../ui/fonts.o
 LOAD ../../ui/term.o
 LOAD ../../ui/graphics.o
@@ -361,7 +378,7 @@ LOAD /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-
                 0x0000000008000000                g_pfnVectors
                 0x0000000008000188                . = ALIGN (0x4)
 
-.text           0x00000000080001c0     0x91dc
+.text           0x00000000080001c0     0x8e9c
                 0x00000000080001c0                . = ALIGN (0x4)
  *(.text)
  .text          0x00000000080001c0       0x40 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
@@ -633,332 +650,326 @@ LOAD /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-
                 0x0000000008005b9c                pow2
                 0x0000000008005c10                powe
  .text          0x0000000008005c20      0x274 ../../ggm/patch1.o
- .text          0x0000000008005e94      0x1fc ../../ggm/patch2.o
- .text          0x0000000008006090      0x3f4 ../../ggm/patch3.o
- .text          0x0000000008006484      0x80c ../../ggm/patch4.o
-                0x0000000008006c3c                swvol0
-                0x0000000008006c44                filter
-                0x0000000008006c8c                wavupac
- .text          0x0000000008006c90      0x378 ../../ggm/patch5.o
- .text          0x0000000008007008      0x210 ../../ggm/patch6.o
- .text          0x0000000008007218      0x438 ../../ggm/patch7.o
- .text          0x0000000008007650      0x36c ../../ggm/waveguide.o
-                0x0000000008007650                wg_gen
-                0x0000000008007864                wg_excite
-                0x00000000080078a4                wg_ctrl_reflection
-                0x00000000080078b0                wg_ctrl_frequency
-                0x0000000008007908                wg_ctrl_stiffness
-                0x0000000008007914                wg_ctrl_pos
-                0x0000000008007938                wg_ctrl_brightness
-                0x000000000800796c                wg_set_velocity
-                0x0000000008007978                wg_set_samplerate
-                0x0000000008007988                wg_exciter_type
-                0x00000000080079a0                wg_init
- .text          0x00000000080079bc      0x1fc ../../ggm/patch8.o
- .text          0x0000000008007bb8      0x21c ../../ggm/waveguide2d.o
-                0x0000000008007bb8                wg_2d_gen
-                0x0000000008007db8                wg_2d_pluck
-                0x0000000008007dc8                wg_2d_ctrl_attenuate
-                0x0000000008007dcc                wg_2d_ctrl_frequency
-                0x0000000008007dd0                wg_2d_init
- .text          0x0000000008007dd4        0x8 ../../ui/fonts.o
-                0x0000000008007dd4                font_get
- .text          0x0000000008007ddc      0x144 ../../ui/term.o
-                0x0000000008007ddc                term_init
-                0x0000000008007e44                term_print
- .text          0x0000000008007f20      0x5ec ../../ggm/p4wave.o
-                0x0000000008007f20                wavupa
- .text          0x000000000800850c      0x378 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_addsubdf3.o)
-                0x000000000800850c                __aeabi_drsub
-                0x0000000008008514                __aeabi_dsub
-                0x0000000008008514                __subdf3
-                0x0000000008008518                __adddf3
-                0x0000000008008518                __aeabi_dadd
-                0x0000000008008790                __aeabi_ui2d
-                0x0000000008008790                __floatunsidf
-                0x00000000080087b0                __floatsidf
-                0x00000000080087b0                __aeabi_i2d
-                0x00000000080087d4                __extendsfdf2
-                0x00000000080087d4                __aeabi_f2d
-                0x0000000008008818                __aeabi_ul2d
-                0x0000000008008818                __floatundidf
-                0x0000000008008828                __floatdidf
-                0x0000000008008828                __aeabi_l2d
- .text          0x0000000008008884      0x424 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_muldivdf3.o)
-                0x0000000008008884                __aeabi_dmul
-                0x0000000008008884                __muldf3
-                0x0000000008008ad8                __aeabi_ddiv
-                0x0000000008008ad8                __divdf3
- .text          0x0000000008008ca8       0x40 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_fixunsdfsi.o)
-                0x0000000008008ca8                __fixunsdfsi
-                0x0000000008008ca8                __aeabi_d2uiz
- .text          0x0000000008008ce8      0x134 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-memcpy.o)
-                0x0000000008008ce8                memcpy
- *fill*         0x0000000008008e1c       0x24 
- .text          0x0000000008008e40       0xdc /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-strlen.o)
-                0x0000000008008e40                strlen
+ .text          0x0000000008005e94      0x230 ../../ggm/patch2.o
+ .text          0x00000000080060c4      0x3f4 ../../ggm/patch3.o
+ .text          0x00000000080064b8      0x80c ../../ggm/patch4.o
+                0x0000000008006c70                swvol0
+                0x0000000008006c78                filter
+                0x0000000008006cc0                wavupac
+ .text          0x0000000008006cc4      0x378 ../../ggm/patch5.o
+ .text          0x000000000800703c      0x210 ../../ggm/patch6.o
+ .text          0x000000000800724c      0x1fc ../../ggm/patch8.o
+ .text          0x0000000008007448      0x21c ../../ggm/waveguide2d.o
+                0x0000000008007448                wg_2d_gen
+                0x0000000008007648                wg_2d_pluck
+                0x0000000008007658                wg_2d_ctrl_attenuate
+                0x000000000800765c                wg_2d_ctrl_frequency
+                0x0000000008007660                wg_2d_init
+ .text          0x0000000008007664      0x254 ../../ggm/patch9.o
+ .text          0x00000000080078b8      0x1dc ../../ggm/woodwind.o
+                0x00000000080078b8                ww_gen
+                0x0000000008007a58                ww_blow
+                0x0000000008007a60                ww_ctrl_attenuate
+                0x0000000008007a70                ww_ctrl_frequency
+                0x0000000008007a90                ww_init
+ .text          0x0000000008007a94        0x8 ../../ui/fonts.o
+                0x0000000008007a94                font_get
+ .text          0x0000000008007a9c      0x144 ../../ui/term.o
+                0x0000000008007a9c                term_init
+                0x0000000008007b04                term_print
+ .text          0x0000000008007be0      0x5ec ../../ggm/p4wave.o
+                0x0000000008007be0                wavupa
+ .text          0x00000000080081cc      0x378 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_addsubdf3.o)
+                0x00000000080081cc                __aeabi_drsub
+                0x00000000080081d4                __aeabi_dsub
+                0x00000000080081d4                __subdf3
+                0x00000000080081d8                __adddf3
+                0x00000000080081d8                __aeabi_dadd
+                0x0000000008008450                __aeabi_ui2d
+                0x0000000008008450                __floatunsidf
+                0x0000000008008470                __floatsidf
+                0x0000000008008470                __aeabi_i2d
+                0x0000000008008494                __extendsfdf2
+                0x0000000008008494                __aeabi_f2d
+                0x00000000080084d8                __aeabi_ul2d
+                0x00000000080084d8                __floatundidf
+                0x00000000080084e8                __floatdidf
+                0x00000000080084e8                __aeabi_l2d
+ .text          0x0000000008008544      0x424 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_muldivdf3.o)
+                0x0000000008008544                __aeabi_dmul
+                0x0000000008008544                __muldf3
+                0x0000000008008798                __aeabi_ddiv
+                0x0000000008008798                __divdf3
+ .text          0x0000000008008968       0x40 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_arm_fixunsdfsi.o)
+                0x0000000008008968                __fixunsdfsi
+                0x0000000008008968                __aeabi_d2uiz
+ .text          0x00000000080089a8      0x134 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-memcpy.o)
+                0x00000000080089a8                memcpy
+ *fill*         0x0000000008008adc       0x24 
+ .text          0x0000000008008b00       0xdc /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-strlen.o)
+                0x0000000008008b00                strlen
  *(.text*)
- .text.startup  0x0000000008008f1c      0x1f0 ../../target/mb997/main.o
-                0x0000000008008f1c                main
+ .text.startup  0x0000000008008bdc      0x1f0 ../../target/mb997/main.o
+                0x0000000008008bdc                main
  .text.Reset_Handler
-                0x000000000800910c       0x50 ../../target/mb997/start.o
-                0x000000000800910c                Reset_Handler
+                0x0000000008008dcc       0x50 ../../target/mb997/start.o
+                0x0000000008008dcc                Reset_Handler
  .text.Default_Handler
-                0x000000000800915c        0x2 ../../target/mb997/start.o
-                0x000000000800915c                RTC_Alarm_IRQHandler
-                0x000000000800915c                HASH_RNG_IRQHandler
-                0x000000000800915c                EXTI2_IRQHandler
-                0x000000000800915c                TIM8_CC_IRQHandler
-                0x000000000800915c                TIM1_CC_IRQHandler
-                0x000000000800915c                DMA2_Stream5_IRQHandler
-                0x000000000800915c                DMA1_Stream5_IRQHandler
-                0x000000000800915c                PVD_IRQHandler
-                0x000000000800915c                SDIO_IRQHandler
-                0x000000000800915c                TAMP_STAMP_IRQHandler
-                0x000000000800915c                CAN2_RX1_IRQHandler
-                0x000000000800915c                EXTI3_IRQHandler
-                0x000000000800915c                TIM8_TRG_COM_TIM14_IRQHandler
-                0x000000000800915c                TIM1_UP_TIM10_IRQHandler
-                0x000000000800915c                TIM8_UP_TIM13_IRQHandler
-                0x000000000800915c                I2C3_ER_IRQHandler
-                0x000000000800915c                EXTI0_IRQHandler
-                0x000000000800915c                I2C2_EV_IRQHandler
-                0x000000000800915c                DMA1_Stream2_IRQHandler
-                0x000000000800915c                CAN1_RX0_IRQHandler
-                0x000000000800915c                FPU_IRQHandler
-                0x000000000800915c                OTG_HS_WKUP_IRQHandler
-                0x000000000800915c                CAN2_SCE_IRQHandler
-                0x000000000800915c                DMA2_Stream2_IRQHandler
-                0x000000000800915c                SPI1_IRQHandler
-                0x000000000800915c                TIM6_DAC_IRQHandler
-                0x000000000800915c                TIM1_BRK_TIM9_IRQHandler
-                0x000000000800915c                DCMI_IRQHandler
-                0x000000000800915c                CAN2_RX0_IRQHandler
-                0x000000000800915c                DMA2_Stream3_IRQHandler
-                0x000000000800915c                USART6_IRQHandler
-                0x000000000800915c                USART3_IRQHandler
-                0x000000000800915c                CAN1_RX1_IRQHandler
-                0x000000000800915c                UART5_IRQHandler
-                0x000000000800915c                DMA2_Stream0_IRQHandler
-                0x000000000800915c                TIM4_IRQHandler
-                0x000000000800915c                I2C1_EV_IRQHandler
-                0x000000000800915c                DMA1_Stream6_IRQHandler
-                0x000000000800915c                DMA1_Stream1_IRQHandler
-                0x000000000800915c                UART4_IRQHandler
-                0x000000000800915c                TIM3_IRQHandler
-                0x000000000800915c                RCC_IRQHandler
-                0x000000000800915c                TIM8_BRK_TIM12_IRQHandler
-                0x000000000800915c                Default_Handler
-                0x000000000800915c                EXTI15_10_IRQHandler
-                0x000000000800915c                ADC_IRQHandler
-                0x000000000800915c                TIM7_IRQHandler
-                0x000000000800915c                CAN2_TX_IRQHandler
-                0x000000000800915c                TIM5_IRQHandler
-                0x000000000800915c                DMA2_Stream7_IRQHandler
-                0x000000000800915c                I2C3_EV_IRQHandler
-                0x000000000800915c                EXTI9_5_IRQHandler
-                0x000000000800915c                RTC_WKUP_IRQHandler
-                0x000000000800915c                ETH_WKUP_IRQHandler
-                0x000000000800915c                SPI2_IRQHandler
-                0x000000000800915c                OTG_HS_EP1_IN_IRQHandler
-                0x000000000800915c                DMA1_Stream0_IRQHandler
-                0x000000000800915c                CAN1_TX_IRQHandler
-                0x000000000800915c                EXTI4_IRQHandler
-                0x000000000800915c                FSMC_IRQHandler
-                0x000000000800915c                ETH_IRQHandler
-                0x000000000800915c                OTG_HS_EP1_OUT_IRQHandler
-                0x000000000800915c                WWDG_IRQHandler
-                0x000000000800915c                TIM2_IRQHandler
-                0x000000000800915c                OTG_FS_WKUP_IRQHandler
-                0x000000000800915c                TIM1_TRG_COM_TIM11_IRQHandler
-                0x000000000800915c                OTG_HS_IRQHandler
-                0x000000000800915c                EXTI1_IRQHandler
-                0x000000000800915c                I2C2_ER_IRQHandler
-                0x000000000800915c                DMA2_Stream1_IRQHandler
-                0x000000000800915c                CAN1_SCE_IRQHandler
-                0x000000000800915c                FLASH_IRQHandler
-                0x000000000800915c                DMA2_Stream4_IRQHandler
-                0x000000000800915c                USART1_IRQHandler
-                0x000000000800915c                OTG_FS_IRQHandler
-                0x000000000800915c                SPI3_IRQHandler
-                0x000000000800915c                DMA1_Stream4_IRQHandler
-                0x000000000800915c                I2C1_ER_IRQHandler
-                0x000000000800915c                DMA2_Stream6_IRQHandler
-                0x000000000800915c                DMA1_Stream3_IRQHandler
- *fill*         0x000000000800915e        0x2 
- .text.truncf   0x0000000008009160       0x2c /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libm.a(lib_a-sf_trunc.o)
-                0x0000000008009160                truncf
+                0x0000000008008e1c        0x2 ../../target/mb997/start.o
+                0x0000000008008e1c                RTC_Alarm_IRQHandler
+                0x0000000008008e1c                HASH_RNG_IRQHandler
+                0x0000000008008e1c                EXTI2_IRQHandler
+                0x0000000008008e1c                TIM8_CC_IRQHandler
+                0x0000000008008e1c                TIM1_CC_IRQHandler
+                0x0000000008008e1c                DMA2_Stream5_IRQHandler
+                0x0000000008008e1c                DMA1_Stream5_IRQHandler
+                0x0000000008008e1c                PVD_IRQHandler
+                0x0000000008008e1c                SDIO_IRQHandler
+                0x0000000008008e1c                TAMP_STAMP_IRQHandler
+                0x0000000008008e1c                CAN2_RX1_IRQHandler
+                0x0000000008008e1c                EXTI3_IRQHandler
+                0x0000000008008e1c                TIM8_TRG_COM_TIM14_IRQHandler
+                0x0000000008008e1c                TIM1_UP_TIM10_IRQHandler
+                0x0000000008008e1c                TIM8_UP_TIM13_IRQHandler
+                0x0000000008008e1c                I2C3_ER_IRQHandler
+                0x0000000008008e1c                EXTI0_IRQHandler
+                0x0000000008008e1c                I2C2_EV_IRQHandler
+                0x0000000008008e1c                DMA1_Stream2_IRQHandler
+                0x0000000008008e1c                CAN1_RX0_IRQHandler
+                0x0000000008008e1c                FPU_IRQHandler
+                0x0000000008008e1c                OTG_HS_WKUP_IRQHandler
+                0x0000000008008e1c                CAN2_SCE_IRQHandler
+                0x0000000008008e1c                DMA2_Stream2_IRQHandler
+                0x0000000008008e1c                SPI1_IRQHandler
+                0x0000000008008e1c                TIM6_DAC_IRQHandler
+                0x0000000008008e1c                TIM1_BRK_TIM9_IRQHandler
+                0x0000000008008e1c                DCMI_IRQHandler
+                0x0000000008008e1c                CAN2_RX0_IRQHandler
+                0x0000000008008e1c                DMA2_Stream3_IRQHandler
+                0x0000000008008e1c                USART6_IRQHandler
+                0x0000000008008e1c                USART3_IRQHandler
+                0x0000000008008e1c                CAN1_RX1_IRQHandler
+                0x0000000008008e1c                UART5_IRQHandler
+                0x0000000008008e1c                DMA2_Stream0_IRQHandler
+                0x0000000008008e1c                TIM4_IRQHandler
+                0x0000000008008e1c                I2C1_EV_IRQHandler
+                0x0000000008008e1c                DMA1_Stream6_IRQHandler
+                0x0000000008008e1c                DMA1_Stream1_IRQHandler
+                0x0000000008008e1c                UART4_IRQHandler
+                0x0000000008008e1c                TIM3_IRQHandler
+                0x0000000008008e1c                RCC_IRQHandler
+                0x0000000008008e1c                TIM8_BRK_TIM12_IRQHandler
+                0x0000000008008e1c                Default_Handler
+                0x0000000008008e1c                EXTI15_10_IRQHandler
+                0x0000000008008e1c                ADC_IRQHandler
+                0x0000000008008e1c                TIM7_IRQHandler
+                0x0000000008008e1c                CAN2_TX_IRQHandler
+                0x0000000008008e1c                TIM5_IRQHandler
+                0x0000000008008e1c                DMA2_Stream7_IRQHandler
+                0x0000000008008e1c                I2C3_EV_IRQHandler
+                0x0000000008008e1c                EXTI9_5_IRQHandler
+                0x0000000008008e1c                RTC_WKUP_IRQHandler
+                0x0000000008008e1c                ETH_WKUP_IRQHandler
+                0x0000000008008e1c                SPI2_IRQHandler
+                0x0000000008008e1c                OTG_HS_EP1_IN_IRQHandler
+                0x0000000008008e1c                DMA1_Stream0_IRQHandler
+                0x0000000008008e1c                CAN1_TX_IRQHandler
+                0x0000000008008e1c                EXTI4_IRQHandler
+                0x0000000008008e1c                FSMC_IRQHandler
+                0x0000000008008e1c                ETH_IRQHandler
+                0x0000000008008e1c                OTG_HS_EP1_OUT_IRQHandler
+                0x0000000008008e1c                WWDG_IRQHandler
+                0x0000000008008e1c                TIM2_IRQHandler
+                0x0000000008008e1c                OTG_FS_WKUP_IRQHandler
+                0x0000000008008e1c                TIM1_TRG_COM_TIM11_IRQHandler
+                0x0000000008008e1c                OTG_HS_IRQHandler
+                0x0000000008008e1c                EXTI1_IRQHandler
+                0x0000000008008e1c                I2C2_ER_IRQHandler
+                0x0000000008008e1c                DMA2_Stream1_IRQHandler
+                0x0000000008008e1c                CAN1_SCE_IRQHandler
+                0x0000000008008e1c                FLASH_IRQHandler
+                0x0000000008008e1c                DMA2_Stream4_IRQHandler
+                0x0000000008008e1c                USART1_IRQHandler
+                0x0000000008008e1c                OTG_FS_IRQHandler
+                0x0000000008008e1c                SPI3_IRQHandler
+                0x0000000008008e1c                DMA1_Stream4_IRQHandler
+                0x0000000008008e1c                I2C1_ER_IRQHandler
+                0x0000000008008e1c                DMA2_Stream6_IRQHandler
+                0x0000000008008e1c                DMA1_Stream3_IRQHandler
+ *fill*         0x0000000008008e1e        0x2 
+ .text.truncf   0x0000000008008e20       0x2c /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libm.a(lib_a-sf_trunc.o)
+                0x0000000008008e20                truncf
  .text.__libc_init_array
-                0x000000000800918c       0x48 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-init.o)
-                0x000000000800918c                __libc_init_array
- .text.memset   0x00000000080091d4       0x94 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-memset.o)
-                0x00000000080091d4                memset
+                0x0000000008008e4c       0x48 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-init.o)
+                0x0000000008008e4c                __libc_init_array
+ .text.memset   0x0000000008008e94       0x94 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-memset.o)
+                0x0000000008008e94                memset
  .text.startup.register_fini
-                0x0000000008009268       0x14 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
- .text.atexit   0x000000000800927c        0xc /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-atexit.o)
-                0x000000000800927c                atexit
+                0x0000000008008f28       0x14 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+ .text.atexit   0x0000000008008f3c        0xc /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-atexit.o)
+                0x0000000008008f3c                atexit
  .text.__libc_fini_array
-                0x0000000008009288       0x34 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-fini.o)
-                0x0000000008009288                __libc_fini_array
+                0x0000000008008f48       0x34 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-fini.o)
+                0x0000000008008f48                __libc_fini_array
  .text.__retarget_lock_acquire_recursive
-                0x00000000080092bc        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x00000000080092bc                __retarget_lock_acquire_recursive
+                0x0000000008008f7c        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x0000000008008f7c                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x00000000080092c0        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
-                0x00000000080092c0                __retarget_lock_release_recursive
+                0x0000000008008f80        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-lock.o)
+                0x0000000008008f80                __retarget_lock_release_recursive
  .text.__register_exitproc
-                0x00000000080092c4       0xc0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__atexit.o)
-                0x00000000080092c4                __register_exitproc
+                0x0000000008008f84       0xc0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__atexit.o)
+                0x0000000008008f84                __register_exitproc
  *(.glue_7)
- .glue_7        0x0000000008009384        0x0 linker stubs
+ .glue_7        0x0000000008009044        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0000000008009384        0x0 linker stubs
+ .glue_7t       0x0000000008009044        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x0000000008009384        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .eh_frame      0x0000000008009044        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
  *(.init)
- .init          0x0000000008009384        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x0000000008009384                _init
- .init          0x0000000008009388        0x8 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ .init          0x0000000008009044        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x0000000008009044                _init
+ .init          0x0000000008009048        0x8 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
  *(.fini)
- .fini          0x0000000008009390        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x0000000008009390                _fini
- .fini          0x0000000008009394        0x8 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
-                0x000000000800939c                . = ALIGN (0x4)
-                0x000000000800939c                _etext = .
+ .fini          0x0000000008009050        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x0000000008009050                _fini
+ .fini          0x0000000008009054        0x8 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+                0x000000000800905c                . = ALIGN (0x4)
+                0x000000000800905c                _etext = .
 
-.vfp11_veneer   0x000000000800939c        0x0
- .vfp11_veneer  0x000000000800939c        0x0 linker stubs
+.vfp11_veneer   0x000000000800905c        0x0
+ .vfp11_veneer  0x000000000800905c        0x0 linker stubs
 
-.v4_bx          0x000000000800939c        0x0
- .v4_bx         0x000000000800939c        0x0 linker stubs
+.v4_bx          0x000000000800905c        0x0
+ .v4_bx         0x000000000800905c        0x0 linker stubs
 
-.iplt           0x000000000800939c        0x0
- .iplt          0x000000000800939c        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.iplt           0x000000000800905c        0x0
+ .iplt          0x000000000800905c        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.rodata         0x000000000800939c     0x89d4
-                0x000000000800939c                . = ALIGN (0x4)
+.rodata         0x000000000800905c     0x898c
+                0x000000000800905c                . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x000000000800939c       0x18 ../../soc/st/stm32f4/system_stm32f4xx.o
-                0x000000000800939c                AHBPrescTable
-                0x00000000080093ac                APBPrescTable
- .rodata        0x00000000080093b4       0x60 ../../soc/st/stm32f4/lib/i2s.o
- .rodata        0x0000000008009414        0xc ../../soc/st/stm32f4/lib/dma.o
- .rodata        0x0000000008009420      0x24c ../../target/mb997/main.o
- .rodata        0x000000000800966c      0x4e0 ../../target/mb997/display.o
- .rodata        0x0000000008009b4c       0x10 ../../common/rtt/SEGGER_RTT.o
- .rodata        0x0000000008009b5c       0x10 ../../common/rtt/SEGGER_RTT_printf.o
- .rodata        0x0000000008009b6c       0x67 ../../drivers/ili9341.o
- *fill*         0x0000000008009bd3        0x1 
- .rodata        0x0000000008009bd4     0x58a8 ../../ggm/sin.o
-                0x0000000008009fd4                mallet_hit_LUT_data
- .rodata        0x000000000800f47c       0x10 ../../ggm/seq.o
- .rodata        0x000000000800f48c      0x100 ../../ggm/pow.o
- .rodata        0x000000000800f58c       0x24 ../../ggm/patch1.o
-                0x000000000800f58c                patch1
- .rodata        0x000000000800f5b0       0x24 ../../ggm/patch2.o
-                0x000000000800f5b0                patch2
- .rodata        0x000000000800f5d4       0x24 ../../ggm/patch3.o
-                0x000000000800f5d4                patch3
- .rodata        0x000000000800f5f8      0x324 ../../ggm/patch4.o
-                0x000000000800f6f8                sintab
-                0x000000000800f8f8                patch4
- .rodata        0x000000000800f91c       0x24 ../../ggm/patch5.o
-                0x000000000800f91c                patch5
- .rodata        0x000000000800f940       0x24 ../../ggm/patch6.o
-                0x000000000800f940                patch6
- .rodata        0x000000000800f964       0x24 ../../ggm/patch7.o
-                0x000000000800f964                patch7
- .rodata        0x000000000800f988       0x24 ../../ggm/patch8.o
-                0x000000000800f988                patch8
- .rodata        0x000000000800f9ac     0x1a50 ../../ui/profont22.o
-                0x000000000800f9ac                profont22
+ .rodata        0x000000000800905c       0x18 ../../soc/st/stm32f4/system_stm32f4xx.o
+                0x000000000800905c                AHBPrescTable
+                0x000000000800906c                APBPrescTable
+ .rodata        0x0000000008009074       0x60 ../../soc/st/stm32f4/lib/i2s.o
+ .rodata        0x00000000080090d4        0xc ../../soc/st/stm32f4/lib/dma.o
+ .rodata        0x00000000080090e0      0x24c ../../target/mb997/main.o
+ .rodata        0x000000000800932c      0x4e0 ../../target/mb997/display.o
+ .rodata        0x000000000800980c       0x10 ../../common/rtt/SEGGER_RTT.o
+ .rodata        0x000000000800981c       0x10 ../../common/rtt/SEGGER_RTT_printf.o
+ .rodata        0x000000000800982c       0x67 ../../drivers/ili9341.o
+ *fill*         0x0000000008009893        0x1 
+ .rodata        0x0000000008009894     0x58a8 ../../ggm/sin.o
+ .rodata        0x000000000800f13c       0x10 ../../ggm/seq.o
+ .rodata        0x000000000800f14c      0x100 ../../ggm/pow.o
+ .rodata        0x000000000800f24c       0x24 ../../ggm/patch1.o
+                0x000000000800f24c                patch1
+ .rodata        0x000000000800f270       0x24 ../../ggm/patch2.o
+                0x000000000800f270                patch2
+ .rodata        0x000000000800f294       0x24 ../../ggm/patch3.o
+                0x000000000800f294                patch3
+ .rodata        0x000000000800f2b8      0x324 ../../ggm/patch4.o
+                0x000000000800f3b8                sintab
+                0x000000000800f5b8                patch4
+ .rodata        0x000000000800f5dc       0x24 ../../ggm/patch5.o
+                0x000000000800f5dc                patch5
+ .rodata        0x000000000800f600       0x24 ../../ggm/patch6.o
+                0x000000000800f600                patch6
+ .rodata        0x000000000800f624       0x24 ../../ggm/patch8.o
+                0x000000000800f624                patch8
+ .rodata        0x000000000800f648       0x24 ../../ggm/patch9.o
+                0x000000000800f648                patch9
+ .rodata        0x000000000800f66c     0x1a50 ../../ui/profont22.o
+                0x000000000800f66c                profont22
  *(.rodata*)
  .rodata.str1.4
-                0x00000000080113fc      0x114 ../../target/mb997/main.o
+                0x00000000080110bc      0x114 ../../target/mb997/main.o
  .rodata.str1.4
-                0x0000000008011510      0x14d ../../target/mb997/audio.o
- *fill*         0x000000000801165d        0x3 
+                0x00000000080111d0      0x14d ../../target/mb997/audio.o
+ *fill*         0x000000000801131d        0x3 
  .rodata.str1.4
-                0x0000000008011660       0x9a ../../target/mb997/display.o
- *fill*         0x00000000080116fa        0x2 
+                0x0000000008011320       0x9a ../../target/mb997/display.o
+ *fill*         0x00000000080113ba        0x2 
  .rodata.str1.4
-                0x00000000080116fc       0x17 ../../common/rtt/SEGGER_RTT.o
- *fill*         0x0000000008011713        0x1 
+                0x00000000080113bc       0x17 ../../common/rtt/SEGGER_RTT.o
+ *fill*         0x00000000080113d3        0x1 
  .rodata.str1.4
-                0x0000000008011714       0x18 ../../drivers/cs43l22.o
+                0x00000000080113d4       0x18 ../../drivers/cs43l22.o
  .rodata.str1.4
-                0x000000000801172c      0x19f ../../ggm/midi.o
- *fill*         0x00000000080118cb        0x1 
+                0x00000000080113ec      0x19f ../../ggm/midi.o
+ *fill*         0x000000000801158b        0x1 
  .rodata.str1.4
-                0x00000000080118cc       0x2e ../../ggm/seq.o
- *fill*         0x00000000080118fa        0x2 
+                0x000000000801158c       0x2e ../../ggm/seq.o
+ *fill*         0x00000000080115ba        0x2 
  .rodata.str1.4
-                0x00000000080118fc       0x95 ../../ggm/ggm.o
- *fill*         0x0000000008011991        0x3 
+                0x00000000080115bc       0x95 ../../ggm/ggm.o
+ *fill*         0x0000000008011651        0x3 
  .rodata.str1.4
-                0x0000000008011994       0x86 ../../ggm/patch1.o
- *fill*         0x0000000008011a1a        0x2 
+                0x0000000008011654       0x86 ../../ggm/patch1.o
+ *fill*         0x00000000080116da        0x2 
  .rodata.str1.4
-                0x0000000008011a1c       0x53 ../../ggm/patch2.o
- *fill*         0x0000000008011a6f        0x1 
+                0x00000000080116dc       0x53 ../../ggm/patch2.o
+                                         0x83 (size before relaxing)
+ *fill*         0x000000000801172f        0x1 
  .rodata.str1.4
-                0x0000000008011a70       0x8b ../../ggm/patch3.o
- *fill*         0x0000000008011afb        0x1 
+                0x0000000008011730       0x8b ../../ggm/patch3.o
+ *fill*         0x00000000080117bb        0x1 
  .rodata.str1.4
-                0x0000000008011afc       0x8b ../../ggm/patch4.o
- *fill*         0x0000000008011b87        0x1 
+                0x00000000080117bc       0x8b ../../ggm/patch4.o
+ *fill*         0x0000000008011847        0x1 
  .rodata.str1.4
-                0x0000000008011b88       0x8b ../../ggm/patch5.o
- *fill*         0x0000000008011c13        0x1 
+                0x0000000008011848       0x8b ../../ggm/patch5.o
+ *fill*         0x00000000080118d3        0x1 
  .rodata.str1.4
-                0x0000000008011c14       0x92 ../../ggm/patch6.o
- *fill*         0x0000000008011ca6        0x2 
+                0x00000000080118d4       0x92 ../../ggm/patch6.o
+ *fill*         0x0000000008011966        0x2 
  .rodata.str1.4
-                0x0000000008011ca8       0x9b ../../ggm/patch7.o
-                                         0xb3 (size before relaxing)
- *fill*         0x0000000008011d43        0x1 
+                0x0000000008011968       0x26 ../../ggm/patch8.o
+                                         0x53 (size before relaxing)
+ *fill*         0x000000000801198e        0x2 
  .rodata.str1.4
-                0x0000000008011d44       0x28 ../../ggm/patch8.o
+                0x0000000008011990       0x54 ../../ggm/patch9.o
                                          0x53 (size before relaxing)
  .rodata._global_impure_ptr
-                0x0000000008011d6c        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
-                0x0000000008011d6c                _global_impure_ptr
-                0x0000000008011d70                . = ALIGN (0x4)
+                0x00000000080119e4        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-impure.o)
+                0x00000000080119e4                _global_impure_ptr
+                0x00000000080119e8                . = ALIGN (0x4)
 
-.rel.dyn        0x0000000008011d70        0x0
- .rel.iplt      0x0000000008011d70        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.rel.dyn        0x00000000080119e8        0x0
+ .rel.iplt      0x00000000080119e8        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x0000000008011d70        0x0
-                0x0000000008011d70                __exidx_start = .
+.ARM            0x00000000080119e8        0x0
+                0x00000000080119e8                __exidx_start = .
  *(.ARM.exidx*)
-                0x0000000008011d70                __exidx_end = .
+                0x00000000080119e8                __exidx_end = .
 
-.preinit_array  0x0000000008011d70        0x0
-                0x0000000008011d70                PROVIDE (__preinit_array_start, .)
+.preinit_array  0x00000000080119e8        0x0
+                0x00000000080119e8                PROVIDE (__preinit_array_start, .)
  *(.preinit_array*)
-                0x0000000008011d70                PROVIDE (__preinit_array_end, .)
+                0x00000000080119e8                PROVIDE (__preinit_array_end, .)
 
-.init_array     0x0000000008011d70        0x8
-                0x0000000008011d70                PROVIDE (__init_array_start, .)
+.init_array     0x00000000080119e8        0x8
+                0x00000000080119e8                PROVIDE (__init_array_start, .)
  *(SORT_BY_NAME(.init_array.*))
  .init_array.00000
-                0x0000000008011d70        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
+                0x00000000080119e8        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc.a(lib_a-__call_atexit.o)
  *(.init_array*)
- .init_array    0x0000000008011d74        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x0000000008011d78                PROVIDE (__init_array_end, .)
+ .init_array    0x00000000080119ec        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x00000000080119f0                PROVIDE (__init_array_end, .)
 
-.fini_array     0x0000000008011d78        0x4
-                0x0000000008011d78                PROVIDE (__fini_array_start, .)
+.fini_array     0x00000000080119f0        0x4
+                0x00000000080119f0                PROVIDE (__fini_array_start, .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x0000000008011d78        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x0000000008011d7c                PROVIDE (__fini_array_end, .)
-                0x0000000008011d7c                _sidata = LOADADDR (.data)
+ .fini_array    0x00000000080119f0        0x4 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x00000000080119f4                PROVIDE (__fini_array_end, .)
+                0x00000000080119f4                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000      0x59c load address 0x0000000008011d7c
+.data           0x0000000020000000      0x59c load address 0x00000000080119f4
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -978,12 +989,12 @@ LOAD /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-
                 0x0000000020000598                __atexit_recursive_mutex
                 0x000000002000059c                . = ALIGN (0x4)
                 0x000000002000059c                _edata = .
-                0x0000000008012318                _siccmram = LOADADDR (.ccmram)
+                0x0000000008011f90                _siccmram = LOADADDR (.ccmram)
 
-.igot.plt       0x000000002000059c        0x0 load address 0x0000000008012318
+.igot.plt       0x000000002000059c        0x0 load address 0x0000000008011f90
  .igot.plt      0x000000002000059c        0x0 /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.ccmram         0x0000000010000000        0x0 load address 0x0000000008012318
+.ccmram         0x0000000010000000        0x0 load address 0x0000000008011f90
                 0x0000000010000000                . = ALIGN (0x4)
                 0x0000000010000000                _sccmram = .
  *(.ccmram)
@@ -1144,13 +1155,13 @@ LOAD /home/val/Desktop/fyp/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-
  .ARM.attributes
                 0x00000000000009b0       0x39 ../../ggm/patch6.o
  .ARM.attributes
-                0x00000000000009e9       0x39 ../../ggm/patch7.o
+                0x00000000000009e9       0x39 ../../ggm/patch8.o
  .ARM.attributes
-                0x0000000000000a22       0x39 ../../ggm/waveguide.o
+                0x0000000000000a22       0x39 ../../ggm/waveguide2d.o
  .ARM.attributes
-                0x0000000000000a5b       0x39 ../../ggm/patch8.o
+                0x0000000000000a5b       0x39 ../../ggm/patch9.o
  .ARM.attributes
-                0x0000000000000a94       0x39 ../../ggm/waveguide2d.o
+                0x0000000000000a94       0x39 ../../ggm/woodwind.o
  .ARM.attributes
                 0x0000000000000acd       0x39 ../../ui/fonts.o
  .ARM.attributes
@@ -1238,10 +1249,10 @@ OUTPUT(ggm elf32-littlearm)
  .comment       0x000000000000007e       0x7f ../../ggm/patch4.o
  .comment       0x000000000000007e       0x7f ../../ggm/patch5.o
  .comment       0x000000000000007e       0x7f ../../ggm/patch6.o
- .comment       0x000000000000007e       0x7f ../../ggm/patch7.o
- .comment       0x000000000000007e       0x7f ../../ggm/waveguide.o
  .comment       0x000000000000007e       0x7f ../../ggm/patch8.o
  .comment       0x000000000000007e       0x7f ../../ggm/waveguide2d.o
+ .comment       0x000000000000007e       0x7f ../../ggm/patch9.o
+ .comment       0x000000000000007e       0x7f ../../ggm/woodwind.o
  .comment       0x000000000000007e       0x7f ../../ui/fonts.o
  .comment       0x000000000000007e       0x7f ../../ui/term.o
  .comment       0x000000000000007e       0x7f ../../ui/profont22.o

@@ -202,7 +202,7 @@ void gwave_init(struct gwave *osc) {
 //-----------------------------------------------------------------------------
 #define MALLET_LUT_SIZE 10836
 
-const int16_t mallet_hit_LUT_data[MALLET_LUT_SIZE] = {
+static const int16_t mallet_hit_LUT_data[MALLET_LUT_SIZE] = {
  -1, 1560, 5997, 11356, 15892, 19721, 22907, 25532, // 0-7
 27656, 29339, 30629, 31575, 32223, 32612, 32764, 32740, // 8-15
 32532, 32193, 31719, 31151, 30493, 29775, 28987, 28160, // 16-23

@@ -243,6 +243,8 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		break;
 	case 97:
 		current_patch_no += 1; // increment to next patch
+		term_print(&ggm_display.term, "       Karplus Strong\n",2);
+		term_print(&ggm_display.term, "       Ideal String\n",4);
 		break;
 	default:
 		break;

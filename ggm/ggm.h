@@ -219,6 +219,40 @@ void wg_exciter_type(struct wg *osc, int exciter_type);
 
 float mallet_lookup(int16_t x);
 float mallet_gen(struct wg *osc);
+
+//-----------------------------------------------------------------------------
+// Woodwind synth
+
+#define WW_DELAY_BITS (6U)
+#define WW_DELAY_SIZE (1U << KS_DELAY_BITS)
+
+struct ww {
+	float freq;		// base frequency
+	float delay[WW_DELAY_SIZE];
+	float delay_2[WW_DELAY_SIZE];
+	float k;		// attenuation and averaging constant 0 to 0.5
+	uint32_t x;		// phase position
+	uint32_t xstep;		// phase step per sample
+	uint32_t x_2;		// phase position
+	uint32_t xstep_2;		// phase step per sample
+	float reed_out;
+	float flute_out;
+	float flute_out_old;
+	int estate; // excitation state
+	struct adsr adsr;
+	struct noise ns;
+	struct sin vibrato; 
+
+
+};
+
+void ww_init(struct ww *osc);
+void ww_ctrl_frequency(struct ww *osc, float freq);
+void ww_ctrl_attenuate(struct ww *osc, float attenuate);
+void ww_blow(struct ww *osc);
+void ww_gen(struct ww *osc, float *out, size_t n);
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 // 2D waveguide
 
@@ -410,6 +444,7 @@ extern const struct patch_ops patch5;
 extern const struct patch_ops patch6;
 extern const struct patch_ops patch7;
 extern const struct patch_ops patch8;
+extern const struct patch_ops patch9;
 
 //-----------------------------------------------------------------------------
 
