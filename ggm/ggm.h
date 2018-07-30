@@ -228,17 +228,20 @@ float mallet_gen(struct wg *osc);
 
 struct ww {
 	float freq;		// base frequency
-	float delay[WW_DELAY_SIZE];
-	float delay_2[WW_DELAY_SIZE];
-	float k;		// attenuation and averaging constant 0 to 0.5
-	uint32_t x;		// phase position
-	uint32_t xstep;		// phase step per sample
-	uint32_t x_2;		// phase position
-	uint32_t xstep_2;		// phase step per sample
-	float reed_out;
-	float flute_out;
 	float flute_out_old;
-
+	float dl_1_out; // output value from delay line 1
+	float dl_1[WW_DELAY_SIZE];
+	float dl_2[WW_DELAY_SIZE];
+	float dl_1_len_total;
+	float dl_2_len_total;
+	float dl_1_len_frac;
+	float dl_2_len_frac;
+	uint32_t dl_1_len;
+	uint32_t dl_2_len;
+	uint32_t dl_1_ptr_in;
+	uint32_t dl_2_ptr_in;
+	uint32_t dl_1_ptr_out;
+	uint32_t dl_2_ptr_out;
 	int estate; // excitation state
 	struct adsr adsr;
 	struct noise ns;

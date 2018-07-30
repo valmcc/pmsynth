@@ -58,42 +58,42 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 
 			//stepping and wrapping pointers
-	    	osc->x_pos_l += 1;
-	    	if (osc->x_pos_l > osc->delay_len){
-	    		osc->x_pos_l = 0;
-	    	}
+			osc->x_pos_l += 1;
+			if (osc->x_pos_l > osc->delay_len){
+				osc->x_pos_l = 0;
+			}
 
-	    	osc->x_pos_l_2 += 1;
-	    	if (osc->x_pos_l_2 > osc->delay_len){
-	    		osc->x_pos_l_2 = 0;
-	    	}
+			osc->x_pos_l_2 += 1;
+			if (osc->x_pos_l_2 > osc->delay_len){
+				osc->x_pos_l_2 = 0;
+			}
 
-	    	osc->x_pos_r += 1;
-	    	if (osc->x_pos_r > osc->delay_len){
-	    		osc->x_pos_r = 0;
-	    	}
+			osc->x_pos_r += 1;
+			if (osc->x_pos_r > osc->delay_len){
+				osc->x_pos_r = 0;
+			}
 
-	    	osc->x_pos_r_2 += 1;
-	    	if (osc->x_pos_r_2 > osc->delay_len){
-	    		osc->x_pos_r_2 = 0;
-	    	}
+			osc->x_pos_r_2 += 1;
+			if (osc->x_pos_r_2 > osc->delay_len){
+				osc->x_pos_r_2 = 0;
+			}
 
-	    	osc->bridge_pos += 1;
-	    	if (osc->bridge_pos > osc->delay_len){
-	    		osc->bridge_pos = 0;
-	    	}
+			osc->bridge_pos += 1;
+			if (osc->bridge_pos > osc->delay_len){
+				osc->bridge_pos = 0;
+			}
 
-	    	osc->nut_pos += 1;
-	    	if (osc->nut_pos > osc->delay_len){
-	    		osc->nut_pos = 0;
-	    	}
+			osc->nut_pos += 1;
+			if (osc->nut_pos > osc->delay_len){
+				osc->nut_pos = 0;
+			}
 
-	    	osc->pickup_pos += 1;
-	    	if (osc->pickup_pos > osc->delay_len){
-	    		osc->pickup_pos = 0;
-	    	}
-	    } else
-	    out[i] = out [i-1];
+			osc->pickup_pos += 1;
+			if (osc->pickup_pos > osc->delay_len){
+				osc->pickup_pos = 0;
+			}
+		} else
+		out[i] = out [i-1];
 	}
 }
 
