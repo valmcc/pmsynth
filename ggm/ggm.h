@@ -223,7 +223,7 @@ float mallet_gen(struct wg *osc);
 //-----------------------------------------------------------------------------
 // Woodwind synth
 
-#define WW_DELAY_BITS (6U)
+#define WW_DELAY_BITS (8U)
 #define WW_DELAY_SIZE (1U << KS_DELAY_BITS)
 
 struct ww {
@@ -238,6 +238,7 @@ struct ww {
 	float reed_out;
 	float flute_out;
 	float flute_out_old;
+
 	int estate; // excitation state
 	struct adsr adsr;
 	struct noise ns;
