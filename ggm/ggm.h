@@ -224,7 +224,7 @@ float mallet_gen(struct wg *osc);
 // Woodwind synth
 
 #define WW_DELAY_BITS (8U)
-#define WW_DELAY_SIZE (1U << KS_DELAY_BITS)
+#define WW_DELAY_SIZE (1U << WW_DELAY_BITS)
 
 struct ww {
 	float freq;		// base frequency
@@ -246,11 +246,15 @@ struct ww {
 	struct adsr adsr;
 	struct noise ns;
 	struct sin vibrato; 
+	float dc_filt_in;
+	float dc_filt_out;
+	uint32_t downsample_amt; // downsampling by halving the length of the delay line
 
 
 };
 
 void ww_init(struct ww *osc);
+void ww_set_samplerate(struct ww *osc, float downsample_amt);
 void ww_ctrl_frequency(struct ww *osc, float freq);
 void ww_ctrl_attenuate(struct ww *osc, float attenuate);
 void ww_blow(struct ww *osc);

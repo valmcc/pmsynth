@@ -93,8 +93,9 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 				osc->pickup_pos = 0;
 			}
 		} else
-		out[i] = out [i-1];
-	}
+		out[i] = out [i-1]; // sample and hold (least cpu)
+
+	} 
 }
 
 //-----------------------------------------------------------------------------
