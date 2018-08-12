@@ -182,31 +182,31 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	switch (ctrl) {
 
 		// Output
-	case 1:		// volume
+	case 75:		// volume
 		ps->vol = midi_map(val, 0.f, 1.5f);
 		update = 1;
 		break;
-	case 2:		// left/right pan
+	case 72:		// left/right pan
 		ps->pan = midi_map(val, 0.f, 1.f);
 		update = 1;
 		break;
 
 		// FM modulation
-	case 5:
+	case 91:
 		ps->fm_tune = midi_map(val, 0.3f, 1.f / 0.3f);
 		update = 2;
 		break;
-	case 6:
+	case 93:
 		ps->fm_level = midi_map(val, 0.00f, 5.f);
 		update = 2;
 		break;
 
 		// LPF response
-	case 7:
+	case 74:
 		ps->cutoff = midi_map(val, 0.5f, 10.f);
 		update = 3;
 		break;
-	case 8:
+	case 71:
 		ps->resonance = midi_map(val, 0.f, 1.f);
 		update = 3;
 		break;

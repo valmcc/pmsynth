@@ -144,6 +144,16 @@ void adsr_init(struct adsr *e, float a, float d, float s, float r) {
 	e->val = 0.f;
 }
 
+void adsr_update(struct adsr *e, float a, float d, float s, float r) {
+	e->s = s;
+	e->ka = get_k(a);
+	e->kd = get_k(d);
+	e->kr = get_k(r);
+	e->d_trigger = 1.f - LEVEL_EPSILON;
+	e->s_trigger = s + (1.f - s) * LEVEL_EPSILON;
+	e->i_trigger = s * LEVEL_EPSILON;
+}
+
 // AD envelope initialisation
 // a = attack time in seconds (>= 0)
 // d = decay time in seconds (>= 0)

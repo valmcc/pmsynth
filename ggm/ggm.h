@@ -28,6 +28,8 @@ GooGooMuck Synthesizer
 //-----------------------------------------------------------------------------
 // global variables
 int current_patch_no; // what midi channel patch is currently playing
+int current_exciter_type; // for screen
+int current_resonator_type;
 
 
 //-----------------------------------------------------------------------------
@@ -135,6 +137,9 @@ void adsr_gen(struct adsr *e, float *out, size_t n);
 // envelopes
 void adsr_init(struct adsr *e, float a, float d, float s, float r);
 void ad_init(struct adsr *e, float a, float d);
+
+// modulation
+void adsr_update(struct adsr *e, float a, float d, float s, float r);
 
 // actions
 void adsr_attack(struct adsr *e);
@@ -457,7 +462,7 @@ extern const struct patch_ops patch9;
 //-----------------------------------------------------------------------------
 
 // number of simultaneous voices
-#define NUM_VOICES 12 // changed to 12 from 16 for reduced underruns
+#define NUM_VOICES 8 // changed to 12 from 16 for reduced underruns
 // number of concurrent channels
 #define NUM_CHANNELS 16
 
