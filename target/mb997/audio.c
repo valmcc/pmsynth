@@ -9,7 +9,7 @@ Audio Control for the STM32F4 Discovery Board
 #include <string.h>
 
 #include "audio.h"
-#include "ggm.h"
+#include "pmsynth.h"
 #include "io.h"
 
 #define DEBUG

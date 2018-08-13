@@ -10,7 +10,7 @@ MB997C Board
 #include "audio.h"
 #include "display.h"
 #include "debounce.h"
-#include "ggm.h"
+#include "pmsynth.h"
 #include "utils.h"
 #include "io.h"
 

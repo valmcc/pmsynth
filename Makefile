@@ -4,7 +4,7 @@ include $(TOP)/mk/common.mk
 TARGET?=mb997
 
 TARGET_DIR = $(TOP)/target/$(TARGET)
-BIN_FILE = $(TARGET_DIR)/ggm.bin
+BIN_FILE = $(TARGET_DIR)/pmsynth.bin
 
 .PHONY: all program clean
 

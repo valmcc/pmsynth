@@ -1,7 +1,7 @@
 TOP = ../..
 include $(TOP)/mk/common.mk
 
-OUTPUT = ggm
+OUTPUT = pmsynth
 
 # hal sources
 HAL_DIR = $(TOP)/soc/st/stm32f4/hal/src
@@ -44,34 +44,34 @@ DRIVERS_DIR = $(TOP)/drivers
 SRC += $(DRIVERS_DIR)/cs43l22.c \
 	$(DRIVERS_DIR)/ili9341.c \
 
-# googoomuck
-GGM_DIR = $(TOP)/ggm
-SRC += $(GGM_DIR)/sin.c \
-	$(GGM_DIR)/midi.c \
-	$(GGM_DIR)/seq.c \
-	$(GGM_DIR)/ggm.c \
-	$(GGM_DIR)/event.c \
-	$(GGM_DIR)/adsr.c \
-	$(GGM_DIR)/pan.c \
-	$(GGM_DIR)/ks.c \
-	$(GGM_DIR)/lpf.c \
-	$(GGM_DIR)/noise.c \
-	$(GGM_DIR)/block.c \
-	$(GGM_DIR)/pow.c \
-	$(GGM_DIR)/bmark.c \
-	$(GGM_DIR)/patch0.c \
-	$(GGM_DIR)/patch1.c \
-	$(GGM_DIR)/patch2.c \
-	$(GGM_DIR)/patch3.c \
-	$(GGM_DIR)/patch4.c \
-	$(GGM_DIR)/patch5.c \
-	$(GGM_DIR)/patch6.c \
-	$(GGM_DIR)/patch7.c \
-	$(GGM_DIR)/waveguide.c \
-	$(GGM_DIR)/patch8.c \
-	$(GGM_DIR)/waveguide2d.c \
-	$(GGM_DIR)/patch9.c \
-	$(GGM_DIR)/woodwind.c \
+# synth files
+SYNTH_DIR = $(TOP)/pmsynth
+SRC += $(SYNTH_DIR)/sin.c \
+	$(SYNTH_DIR)/midi.c \
+	$(SYNTH_DIR)/seq.c \
+	$(SYNTH_DIR)/pmsynth.c \
+	$(SYNTH_DIR)/event.c \
+	$(SYNTH_DIR)/adsr.c \
+	$(SYNTH_DIR)/pan.c \
+	$(SYNTH_DIR)/ks.c \
+	$(SYNTH_DIR)/lpf.c \
+	$(SYNTH_DIR)/noise.c \
+	$(SYNTH_DIR)/block.c \
+	$(SYNTH_DIR)/pow.c \
+	$(SYNTH_DIR)/bmark.c \
+	$(SYNTH_DIR)/patch0.c \
+	$(SYNTH_DIR)/patch1.c \
+	$(SYNTH_DIR)/patch2.c \
+	$(SYNTH_DIR)/patch3.c \
+	$(SYNTH_DIR)/patch4.c \
+	$(SYNTH_DIR)/patch5.c \
+	$(SYNTH_DIR)/patch6.c \
+	$(SYNTH_DIR)/patch7.c \
+	$(SYNTH_DIR)/waveguide.c \
+	$(SYNTH_DIR)/patch8.c \
+	$(SYNTH_DIR)/waveguide2d.c \
+	$(SYNTH_DIR)/patch9.c \
+	$(SYNTH_DIR)/woodwind.c \
 
 # ui
 UI_DIR = $(TOP)/ui
@@ -82,7 +82,7 @@ SRC += $(UI_DIR)/fonts.c \
 
 OBJ = $(patsubst %.c, %.o, $(SRC))
 OBJ += $(TARGET_DIR)/start.o
-OBJ += $(GGM_DIR)/p4wave.o
+OBJ += $(SYNTH_DIR)/p4wave.o
 
 # include files
 
@@ -94,7 +94,7 @@ INCLUDE += -I$(DRIVERS_DIR)
 INCLUDE += -I$(TARGET_DIR)
 INCLUDE += -I$(COMMON_DIR)
 INCLUDE += -I$(COMMON_DIR)/rtt
-INCLUDE += -I$(GGM_DIR)
+INCLUDE += -I$(SYNTH_DIR)
 INCLUDE += -I$(UI_DIR)
 
 # defines
