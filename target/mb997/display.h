@@ -22,7 +22,7 @@ struct display_drv {
 	struct term_drv term;
 };
 
-extern struct display_drv ggm_display;
+extern struct display_drv pmsynth_display;
 
 //-----------------------------------------------------------------------------
 

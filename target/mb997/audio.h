@@ -55,7 +55,7 @@ struct audio_drv {
 	int16_t buffer[AUDIO_BUFFER_SIZE] ALIGN(4);	// dma->i2s buffer
 };
 
-extern struct audio_drv ggm_audio;
+extern struct audio_drv pmsynth_audio;
 
 //-----------------------------------------------------------------------------
 

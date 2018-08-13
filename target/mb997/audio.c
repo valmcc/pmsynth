@@ -17,7 +17,7 @@ Audio Control for the STM32F4 Discovery Board
 
 //-----------------------------------------------------------------------------
 
-struct audio_drv ggm_audio;
+struct audio_drv pmsynth_audio;
 
 //-----------------------------------------------------------------------------
 // DMA setup
@@ -30,7 +30,7 @@ static void audio_err_callback(struct dma_drv *dma, uint32_t errors) {
 // half transfer callback
 static void audio_ht_callback(struct dma_drv *dma, int idx) {
 	// dma is reading from the top half, so fill the bottom half
-	int rc = event_wr(EVENT_TYPE_AUDIO | AUDIO_BLOCK_SIZE, &ggm_audio.buffer[0]);
+	int rc = event_wr(EVENT_TYPE_AUDIO | AUDIO_BLOCK_SIZE, &pmsynth_audio.buffer[0]);
 	if (rc != 0) {
 		DBG("event_wr error for ht callback\r\n");
 	}
@@ -39,7 +39,7 @@ static void audio_ht_callback(struct dma_drv *dma, int idx) {
 // transfer complete callback
 static void audio_tc_callback(struct dma_drv *dma, int idx) {
 	// dma is reading from the bottom half, so fill the top half
-	int rc = event_wr(EVENT_TYPE_AUDIO | AUDIO_BLOCK_SIZE, &ggm_audio.buffer[HALF_AUDIO_BUFFER_SIZE]);
+	int rc = event_wr(EVENT_TYPE_AUDIO | AUDIO_BLOCK_SIZE, &pmsynth_audio.buffer[HALF_AUDIO_BUFFER_SIZE]);
 	if (rc != 0) {
 		DBG("event_wr error for tc callback\r\n");
 	}
@@ -62,7 +62,7 @@ static struct dma_cfg audio_dma_cfg = {
 	.pfctrl = DMA_PFCTRL_DMA,
 	.fifo = DMA_FIFO_ENABLE,
 	.fth = DMA_FTH(3),
-	.src = (uint32_t) ggm_audio.buffer,
+	.src = (uint32_t) pmsynth_audio.buffer,
 	.dst = (uint32_t) & SPI3->DR,
 	.nitems = AUDIO_BUFFER_SIZE,
 	.err_callback = audio_err_callback,
@@ -71,7 +71,7 @@ static struct dma_cfg audio_dma_cfg = {
 };
 
 void DMA1_Stream7_IRQHandler(void) {
-	dma_isr(&ggm_audio.dma);
+	dma_isr(&pmsynth_audio.dma);
 }
 
 //-----------------------------------------------------------------------------

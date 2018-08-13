@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #------------------------------------------------------------------------------
 """
-convert a BDF font file to GGM C file form
+convert a BDF font file to PMSYNTH C file form
 """
 #------------------------------------------------------------------------------
 
@@ -303,8 +303,8 @@ class font(object):
     s.append('};')
     return '\n'.join(s)
 
-  def encode_ggm(self):
-    """encode the ggm c-code"""
+  def encode_pmsynth(self):
+    """encode the pmsynth c-code"""
     s = []
     s.append(self.encode_preamble())
     s.append(self.encode_bitmaps())
@@ -327,9 +327,9 @@ def main():
   f = open(_ifile, 'r')
   data = f.read()
   f.close()
-  # parse the bdf data and re-encode as a ggm structure
+  # parse the bdf data and re-encode as a pmsynth structure
   x = font(data, cname)
-  code = x.encode_ggm()
+  code = x.encode_pmsynth()
   # write the output
   f = open(_ofile, 'w')
   f.write(code)

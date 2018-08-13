@@ -59,7 +59,7 @@ static const struct gpio_info gpios[] = {
 
 //-----------------------------------------------------------------------------
 
-static struct ggm synth;
+static struct pmsynth synth;
 
 //-----------------------------------------------------------------------------
 
@@ -192,17 +192,17 @@ static void rng_data_callback(struct rng_drv *rng, uint32_t data) {
 	// do something with the data
 }
 void HASH_RNG_IRQHandler(void) {
-	rng_isr(&ggm_rng);
+	rng_isr(&pmsynth_rng);
 }
 #endif
 
-static struct rng_cfg ggm_rng_cfg = {
+static struct rng_cfg pmsynth_rng_cfg = {
 	.mode = RNG_MODE_POLLED,
 	//.err_callback = rng_err_callback,
 	//.data_callback = rng_data_callback,
 };
 
-static struct rng_drv ggm_rng;
+static struct rng_drv pmsynth_rng;
 
 //-----------------------------------------------------------------------------
 // midi port (on USART2)
@@ -256,7 +256,7 @@ int main(void) {
 	HAL_NVIC_SetPriority(USART2_IRQn, 10, 0);
 	NVIC_EnableIRQ(USART2_IRQn);
 
-	rc = rng_init(&ggm_rng, &ggm_rng_cfg);
+	rc = rng_init(&pmsynth_rng, &pmsynth_rng_cfg);
 	if (rc != 0) {
 		DBG("rng_init failed %d\r\n", rc);
 		goto exit;
@@ -266,7 +266,7 @@ int main(void) {
 	HAL_NVIC_SetPriority(HASH_RNG_IRQn, 10, 0);
 	HAL_NVIC_EnableIRQ(HASH_RNG_IRQn);
 #endif
-	rng_enable(&ggm_rng);
+	rng_enable(&pmsynth_rng);
 
 	rc = adc_init(&test_adc, &test_adc_cfg);
 	if (rc != 0) {
@@ -274,31 +274,31 @@ int main(void) {
 		goto exit;
 	}
 
-	rc = audio_init(&ggm_audio);
+	rc = audio_init(&pmsynth_audio);
 	if (rc != 0) {
 		DBG("audio_init failed %d\r\n", rc);
 		goto exit;
 	}
 
-	rc = display_init(&ggm_display);
+	rc = display_init(&pmsynth_display);
 	if (rc != 0) {
 		DBG("display_init failed %d\r\n", rc);
 		goto exit;
 	}
 
-	rc = ggm_init(&synth, &ggm_audio, &midi_serial);
+	rc = pmsynth_init(&synth, &pmsynth_audio, &midi_serial);
 	if (rc != 0) {
-		DBG("ggm_init failed %d\r\n", rc);
+		DBG("pmsynth_init failed %d\r\n", rc);
 		goto exit;
 	}
 
-	rc = audio_start(&ggm_audio);
+	rc = audio_start(&pmsynth_audio);
 	if (rc != 0) {
 		DBG("audio_start failed %d\r\n", rc);
 		goto exit;
 	}
 	// seed the PRNG
-	rc = rng_rd(&ggm_rng, 1, &val);
+	rc = rng_rd(&pmsynth_rng, 1, &val);
 	if (rc == 0) {
 		rand_init(val);
 	} else {
@@ -308,9 +308,9 @@ int main(void) {
 
 	DBG("init good\r\n");
 
-	rc = ggm_run(&synth);
+	rc = pmsynth_run(&synth);
 	if (rc != 0) {
-		DBG("ggm_run exited %d\r\n", rc);
+		DBG("pmsynth_run exited %d\r\n", rc);
 		goto exit;
 	}
 
