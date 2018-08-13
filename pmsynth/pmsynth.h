@@ -463,7 +463,7 @@ extern const struct patch_ops patch9;
 //-----------------------------------------------------------------------------
 
 // number of simultaneous voices
-#define NUM_VOICES 8 // changed to 12 from 16 for reduced underruns
+#define NUM_VOICES 12 // changed to 12 from 16 for reduced underruns
 // number of concurrent channels
 #define NUM_CHANNELS 16
 
