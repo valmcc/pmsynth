@@ -3,7 +3,7 @@
 
 Patch 6
 
-A simple patch - Just an envelope on noise.
+Dummy patch (Does nothing)
 
 */
 //-----------------------------------------------------------------------------
@@ -91,7 +91,10 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 	struct v_state *vs = (struct v_state *)v->state;
 	float am[n];
 	float out[n];
-	// generate the envelope
+
+	// do nothing
+	
+/*	// generate the envelope
 	adsr_gen(&vs->adsr, am, n);
 
 	// generate the noise
@@ -103,7 +106,7 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 		noise_gen_pink2(&vs->ns, out, n);
 	} else if (vs->algo == 3) {
 		noise_gen_brown(&vs->ns, out, n);
-	}
+	}*/
 	// apply the envelope
 	block_mul(out, am, n);
 	// pan to left/right channels

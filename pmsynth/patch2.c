@@ -135,9 +135,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 2;
 		break;
 	case 97:
-		current_patch_no -= 1; // increment to next patch
-		term_print(&pmsynth_display.term, "       1D Waveguide\n",2);
-		term_print(&pmsynth_display.term, "       Struck String\n",4);
+		goto_next_patch(p);
 		break;
 	default:
 		break;

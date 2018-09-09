@@ -27,9 +27,14 @@ Physical Modelling Synthesizer
 
 //-----------------------------------------------------------------------------
 // global variables
+
+// number of simultaneous voices
+#define NUM_VOICES 16 // Max number of voices (polyphony)
+
 int current_patch_no; // what midi channel patch is currently playing
 int current_exciter_type; // for screen
 int current_resonator_type;
+int global_polyphony;
 
 
 //-----------------------------------------------------------------------------
@@ -254,8 +259,9 @@ struct ww {
 	float dc_filt_in;
 	float dc_filt_out;
 	uint32_t downsample_amt; // downsampling by halving the length of the delay line
-	float r1; // reflection coefs
-	float r2;
+	float r_1; // reflection coefs
+	float r_2;
+	float lp_filter_coef;
 
 };
 
@@ -263,6 +269,7 @@ void ww_init(struct ww *osc);
 void ww_set_samplerate(struct ww *osc, float downsample_amt);
 void ww_ctrl_frequency(struct ww *osc, float freq);
 void ww_ctrl_attenuate(struct ww *osc, float attenuate);
+void ww_update_coefficients(struct ww *osc, float lp_filter_coef, float r_1, float r_2);
 void ww_blow(struct ww *osc);
 void ww_gen(struct ww *osc, float *out, size_t n);
 //-----------------------------------------------------------------------------
@@ -420,6 +427,7 @@ struct voice {
 
 struct voice *voice_lookup(struct pmsynth *s, uint8_t channel, uint8_t note);
 struct voice *voice_alloc(struct pmsynth *s, uint8_t channel, uint8_t note);
+void stop_voices(struct patch *p);
 void update_voices(struct patch *p, void (*func) (struct voice *));
 
 //-----------------------------------------------------------------------------
@@ -462,8 +470,7 @@ extern const struct patch_ops patch9;
 
 //-----------------------------------------------------------------------------
 
-// number of simultaneous voices
-#define NUM_VOICES 12 // changed to 12 from 16 for reduced underruns
+
 // number of concurrent channels
 #define NUM_CHANNELS 16
 
@@ -479,6 +486,15 @@ struct pmsynth {
 
 int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *midi);
 int pmsynth_run(struct pmsynth *s);
+
+//-----------------------------------------------------------------------------
+// Handler functions
+
+void goto_next_patch(struct patch *p);
+void update_resonator();
+void update_patch();
+void update_polyphony();
+void update_exciter();
 
 //-----------------------------------------------------------------------------
 

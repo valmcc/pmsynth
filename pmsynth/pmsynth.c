@@ -38,7 +38,8 @@ struct voice *voice_alloc(struct pmsynth *s, uint8_t channel, uint8_t note) {
 	// More intelligent voice allocation to follow....
 	struct voice *v = &s->voices[s->voice_idx];
 	s->voice_idx += 1;
-	if (s->voice_idx == NUM_VOICES) {
+	//if (s->voice_idx == NUM_VOICES) {
+	if (s->voice_idx >= global_polyphony) {
 		s->voice_idx = 0;
 	}
 	// stop an existing patch on this voice
@@ -51,7 +52,21 @@ struct voice *voice_alloc(struct pmsynth *s, uint8_t channel, uint8_t note) {
 	v->patch = &s->patches[channel];
 	v->patch->ops->start(v);
 	return v;
+
 }
+
+// stops all voices
+void stop_voices(struct patch *p) {
+	for (int i = 0; i < NUM_VOICES; i++) {
+		struct voice *v = &p->pmsynth->voices[i];
+		if (v->patch == p) {
+			v->patch->ops->stop(v);
+		}
+
+		voice_alloc(p->pmsynth, 5, 42); // overwrites all voices with a dummy voice (channel 5)
+	}
+}
+
 
 // run an update function for each voice using the patch
 void update_voices(struct patch *p, void (*func) (struct voice *)) {
@@ -174,16 +189,21 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 		DBG("event_init failed %d\r\n", rc);
 		goto exit;
 	}
+
+	// setting polyphony
+	update_polyphony();
+
+
 	// setup the patch operations
 	s->patches[0].ops = &patch7;
-	s->patches[1].ops = &patch9;
-	//s->patches[1].ops = &patch2;
-	s->patches[2].ops = &patch1;
-	s->patches[3].ops = &patch3;
-	s->patches[4].ops = &patch5;
-	s->patches[5].ops = &patch6;
-	s->patches[6].ops = &patch4;
-	s->patches[7].ops = &patch8;
+	s->patches[1].ops = &patch2;
+	s->patches[2].ops = &patch9;
+	//s->patches[2].ops = &patch1;
+	//s->patches[3].ops = &patch3;
+	//s->patches[4].ops = &patch5;
+	//s->patches[5].ops = &patch6;
+	//s->patches[6].ops = &patch4;
+	//s->patches[7].ops = &patch8;
 	//s->patches[8].ops = &patch9;
 
 
@@ -205,14 +225,16 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 		v->channel = 255;
 		v->note = 255;
 	}
-
+	update_patch();
+	update_exciter();
+	update_resonator();
 	// setup the sequencer
-	rc = seq_init(&s->seq0);
-	if (rc != 0) {
-		DBG("seq_init failed %d\r\n", rc);
-		goto exit;
-	}
-	s->seq0.pmsynth = s;
+	//rc = seq_init(&s->seq0);
+	//if (rc != 0) {
+	// 	DBG("seq_init failed %d\r\n", rc);
+	// 	goto exit;
+	// }
+	// s->seq0.pmsynth = s;
 
  exit:
 	return rc;

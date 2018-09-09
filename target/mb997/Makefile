@@ -72,6 +72,7 @@ SRC += $(SYNTH_DIR)/sin.c \
 	$(SYNTH_DIR)/waveguide2d.c \
 	$(SYNTH_DIR)/patch9.c \
 	$(SYNTH_DIR)/woodwind.c \
+	$(SYNTH_DIR)/handler.c \
 
 # ui
 UI_DIR = $(TOP)/ui

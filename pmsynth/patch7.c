@@ -91,25 +91,6 @@ static void ctrl_brightness(struct voice *v) {
 static void ctrl_exciter_type(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	if (ps->exciter_type > 1){
-		ps->exciter_type = 0;
-	}
-
-	if (ps->screen_state != ps-> exciter_type){
-		switch(ps->exciter_type){
-			case 0: //struck string
-				term_print(&pmsynth_display.term, "       Struck String\n",4);
-				//lcd_draw_bitmap(drv->cfg.lcd, bx, by, g->width, g->height, drv->cfg.fg, drv->cfg.bg, g->data);
-				ps->screen_state = 0;
-				break;
-			case 1: // struck tube
-				term_print(&pmsynth_display.term, "       Struck Tube\n",4);
-				ps->screen_state = 1;
-				break;
-			default:
-				break;
-		}
-	}
 	wg_exciter_type(&vs->wg, ps->exciter_type);
 }
 
@@ -138,6 +119,8 @@ static void start(struct voice *v) {
 // stop the patch
 static void stop(struct voice *v) {
 	DBG("p7 stop v%d c%d n%d\r\n", v->idx, v->channel, v->note);
+	struct v_state *vs = (struct v_state *)v->state;
+	wg_ctrl_reflection(&vs->wg,0.0f);
 }
 
 // note on
@@ -198,7 +181,7 @@ static void init(struct patch *p) {
 	ps->reflection = -0.99f;
 	ps->release = 0.0f;
 	ps->stiffness = 1.0f;
-	//ps->pickup_pos = 1.0f;
+	ps->exciter_type = 0.0f;
 	ps->exciter_loc = 0.25f;
 	ps->brightness = 1.0f;
 }
@@ -239,12 +222,16 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		break;
 	case 96:
 		ps->exciter_type += 1;
+		if (ps->exciter_type > 1){
+			ps->exciter_type = 0;
+		}
+		current_resonator_type = ps->exciter_type;
+		update_resonator();
 		update = 6;
 		break;
 	case 97:
-		current_patch_no += 1; // increment to next patch
-		term_print(&pmsynth_display.term, "       Karplus Strong\n",2);
-		term_print(&pmsynth_display.term, "       Ideal String\n",4);
+		ps->exciter_type = 0.0f;
+		goto_next_patch(p);
 		break;
 	default:
 		break;

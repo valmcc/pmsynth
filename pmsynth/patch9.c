@@ -33,6 +33,9 @@ struct p_state {
 	float d;
 	float s;
 	float r;
+	float lp_filter_coef;
+	float r_1;
+	float r_2;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -70,6 +73,13 @@ static void ctrl_adsr(struct voice *v) {
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	adsr_update(&vs->ww.adsr, ps->a, ps->d, ps->s, ps->r);
 }
+
+static void ctrl_coefs(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	ww_update_coefficients(&vs->ww, ps->lp_filter_coef, ps->r_1, ps->r_2);
+}
+
 //-----------------------------------------------------------------------------
 // voice operations
 
@@ -91,12 +101,15 @@ static void start(struct voice *v) {
 	ctrl_frequency(v);
 	ctrl_attenuate(v);
 	ctrl_pan(v);
+	ctrl_coefs(v);
 
 }
 
 // stop the patch
 static void stop(struct voice *v) {
 	DBG("p9 stop v%d c%d n%d\r\n", v->idx, v->channel, v->note);
+	struct v_state *vs = (struct v_state *)v->state;
+	adsr_release(&vs->ww.adsr);
 }
 
 // note on
@@ -137,10 +150,13 @@ static void init(struct patch *p) {
 	ps->pan = 0.5f;
 	ps->bend = 0.f;
 	ps->attenuate = 0.99f;
-	ps->a = 0.2f;
+	ps->a = 0.1f;
 	ps->d = 2.0f;
 	ps->s = 1.0f;
 	ps->r = 1.0f;
+	ps->lp_filter_coef = 0.6f;
+	ps->r_1 = 0.42f;
+	ps->r_2 = 0.53f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -150,6 +166,18 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	DBG("p9 ctrl %d val %d\r\n", ctrl, val);
 
 	switch (ctrl) {
+	case 91:
+		ps->r_1 = midi_map(val, 0.0f, 0.8f);
+		update = 4;
+		break;
+	case 93:
+		ps->r_2 = midi_map(val, 0.0f, 0.8f);
+		update = 4;
+		break;
+	case 71:
+		ps->lp_filter_coef = midi_map(val, 0.0f, 1.0f);
+		update = 4;
+		break;
 	case 1:		// volume
 		ps->vol = midi_map(val, 0.f, 0.4f);
 		update = 1;
@@ -162,11 +190,8 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->attenuate = midi_map(val, 0.87f, 1.f);
 		update = 2;
 		break;
-	case 97:
-		//current_patch_no -= 1; // increment to next patch
-		break;
 	case 73:
-		ps->a = midi_map(val, 0.0f, 1.f);
+		ps->a = midi_map(val, 0.05f, 1.f);
 		update = 3;
 		break;
 	case 75:
@@ -181,6 +206,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->r = midi_map(val, 0.0f, 1.f);
 		update = 3;
 		break;
+	case 97:
+		goto_next_patch(p);
+		break;
 	default:
 		break;
 	}
@@ -193,6 +221,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	}
 	if (update == 3) {
 		update_voices(p, ctrl_adsr);
+	}
+	if (update == 4) {
+		update_voices(p, ctrl_coefs);
 	}
 }
 

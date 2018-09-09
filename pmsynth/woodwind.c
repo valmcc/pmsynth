@@ -67,7 +67,7 @@ void ww_gen(struct ww *osc, float *out, size_t n) {
 
 			if (i % osc->downsample_amt == 0){
 			// delay line 2 (for jet reed)
-			osc->dl_2[osc->dl_2_ptr_in] = breath[i] + R_1 * osc->dl_1_out;
+			osc->dl_2[osc->dl_2_ptr_in] = breath[i] + osc->r_1 * osc->dl_1_out;
 
 			// stepping and wrapping pointers for delay line 2
 			osc->dl_2_ptr_in += 1;
@@ -84,10 +84,10 @@ void ww_gen(struct ww *osc, float *out, size_t n) {
 
 			// summing and adding
 			reed_out = reed_out - (pow2(reed_out) * reed_out);
-			reed_out = reed_out + R_2 * osc->dl_1_out;
+			reed_out = reed_out + osc->r_2 * osc->dl_1_out;
 
 			// low pass filter
-			float flute_out = osc->flute_out_old + FILTER_COEF * (reed_out - osc->flute_out_old);
+			float flute_out = osc->flute_out_old + osc->lp_filter_coef * (reed_out - osc->flute_out_old);
 			osc->flute_out_old = flute_out;
 
 			// for delay line 1
@@ -147,6 +147,12 @@ void ww_ctrl_attenuate(struct ww *osc, float attenuate) {
 
 void ww_set_samplerate(struct ww *osc, float downsample_amt) {
 	osc->downsample_amt = downsample_amt;
+}
+
+void ww_update_coefficients(struct ww *osc, float lp_filter_coef, float r_1, float r_2) {
+	osc->lp_filter_coef = lp_filter_coef;
+	osc->r_1 = r_1;
+	osc->r_2 = r_2;
 }
 
 void ww_ctrl_frequency(struct ww *osc, float freq) {
