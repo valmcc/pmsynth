@@ -40,6 +40,7 @@ static float get_k(float t) {
 
 // Enter attack state.
 void adsr_attack(struct adsr *e) {
+	e->val = 0.f;
 	e->state = ADSR_STATE_ATTACK;
 }
 

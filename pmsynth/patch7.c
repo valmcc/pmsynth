@@ -130,7 +130,7 @@ static void stop(struct voice *v) {
 	DBG("p7 stop v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	struct v_state *vs = (struct v_state *)v->state;
 	wg_ctrl_reflection(&vs->wg,0.0f);
-	adsr_release(&vs->wg.adsr);
+	adsr_idle(&vs->wg.adsr);
 }
 
 // note on

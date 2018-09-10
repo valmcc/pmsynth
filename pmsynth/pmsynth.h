@@ -29,7 +29,7 @@ Physical Modelling Synthesizer
 // global variables
 
 // number of simultaneous voices
-#define NUM_VOICES 16 // Max number of voices (polyphony)
+#define NUM_VOICES 8 // Max number of voices (polyphony)
 
 int current_patch_no; // what midi channel patch is currently playing
 int current_exciter_type; // for screen
@@ -493,9 +493,9 @@ int pmsynth_run(struct pmsynth *s);
 //-----------------------------------------------------------------------------
 // banded waveguide synth
 
-#define WGB_DELAY_BITS (7U)
+#define WGB_DELAY_BITS (8U)
 #define WGB_DELAY_SIZE (1U << WGB_DELAY_BITS)
-#define NUM_MODES (3U) // 4 modes
+#define NUM_MODES (3) // 3 modes (reduced from 4)
 
 struct mode {
 	float freq_coef; // frequency coefficient of this mode (eg 1 = base freq)
@@ -504,6 +504,8 @@ struct mode {
 	uint32_t dl_ptr_in;
 	uint32_t dl_ptr_out;
 	uint32_t delay_len;
+	uint32_t downsample_amt;
+	float mix_factor;
 };
 
 struct wgb {
@@ -511,6 +513,9 @@ struct wgb {
 	int estate; // excitement state (1 = excited, 0 = not)
 	float freq;		// base frequency
 	struct mode mode[NUM_MODES];
+	float bp_res; // bp filter coef
+	struct adsr adsr;
+	float velocity;
 };
 // for exciter!
 float mallet_gen_wgb(struct wgb *osc);
@@ -520,6 +525,8 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq);
 void wgb_ctrl_attenuate(struct wgb *osc, float attenuate);
 void wgb_pluck(struct wgb *osc);
 void wgb_gen(struct wgb *osc, float *out, size_t n);
+void wgb_filter_ctrl(struct wgb *osc, float allpass);
+void wgb_set_velocity(struct wgb *osc, float velocity);
 
 //-----------------------------------------------------------------------------
 // Handler functions
