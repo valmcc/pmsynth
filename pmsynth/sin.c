@@ -1593,6 +1593,21 @@ float mallet_gen(struct wg *osc) {
 	// step one data point along the sample
 }
 
+float mallet_gen_wgb(struct wgb *osc) {
+	//"speed" is osc->espeed
+	// now in integers for speed (surprise! no performance increase here!)
+	if (osc->epos <= MALLET_LUT_MASK) {
+			osc->epos += 1;
+	} else {
+		osc->estate = 0; 
+		osc->epos = 0; 
+		// if it passes the end of the sample
+		// it is no longer in the excitement state
+	}
+	return mallet_lookup(osc->epos);
+	// step one data point along the sample
+}
+
 float mallet_gen_2d(struct wg_2d *osc) {
 	//"speed" is osc->espeed
 	// now in integers for speed (surprise! no performance increase here!)

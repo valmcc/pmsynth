@@ -231,6 +231,7 @@ void wg_exciter_type(struct wg *osc, int exciter_type);
 float mallet_lookup(int16_t x);
 float mallet_gen(struct wg *osc);
 
+
 //-----------------------------------------------------------------------------
 // Woodwind synth
 
@@ -492,23 +493,27 @@ int pmsynth_run(struct pmsynth *s);
 //-----------------------------------------------------------------------------
 // banded waveguide synth
 
-#define WGB_DELAY_BITS (8U)
+#define WGB_DELAY_BITS (7U)
 #define WGB_DELAY_SIZE (1U << WGB_DELAY_BITS)
+#define NUM_MODES (3U) // 4 modes
 
-struct wgb {
-	float freq;		// base frequency
+struct mode {
+	float freq_coef; // frequency coefficient of this mode (eg 1 = base freq)
 	float delay[WGB_DELAY_SIZE];
-	float k;		// attenuation and averaging constant 0 to 0.5
-	uint32_t x;		// phase position
-	uint32_t xstep;		// phase step per sample
-	uint32_t delay_len;
+	struct svf2 bpf;
 	uint32_t dl_ptr_in;
 	uint32_t dl_ptr_out;
-	uint8_t estate;
-	struct svf2 bpf;
-	float dc_filt_out;
-	float dc_filt_in;
+	uint32_t delay_len;
 };
+
+struct wgb {
+	uint32_t epos; // excitation sample position (in wavetable)
+	int estate; // excitement state (1 = excited, 0 = not)
+	float freq;		// base frequency
+	struct mode mode[NUM_MODES];
+};
+// for exciter!
+float mallet_gen_wgb(struct wgb *osc);
 
 void wgb_init(struct wgb *osc);
 void wgb_ctrl_frequency(struct wgb *osc, float freq);
