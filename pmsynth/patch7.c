@@ -37,7 +37,10 @@ struct p_state {
 	float brightness;
 	float release;
 	int exciter_type;
-	int screen_state;
+	float a;
+	float d;
+	float s;
+	float r;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -94,7 +97,11 @@ static void ctrl_exciter_type(struct voice *v) {
 	wg_exciter_type(&vs->wg, ps->exciter_type);
 }
 
-
+static void ctrl_adsr(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	adsr_update(&vs->wg.adsr, ps->a, ps->d, ps->s, ps->r);
+}
 
 //-----------------------------------------------------------------------------
 // voice operations
@@ -103,8 +110,10 @@ static void ctrl_exciter_type(struct voice *v) {
 static void start(struct voice *v) {
 	DBG("p7 start v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
 	memset(vs, 0, sizeof(struct v_state));
 
+	adsr_init(&vs->wg.adsr, ps->a, ps->d, ps->s, ps->r);
 	wg_init(&vs->wg);
 	pan_init(&vs->pan);
 
@@ -121,6 +130,7 @@ static void stop(struct voice *v) {
 	DBG("p7 stop v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	struct v_state *vs = (struct v_state *)v->state;
 	wg_ctrl_reflection(&vs->wg,0.0f);
+	adsr_release(&vs->wg.adsr);
 }
 
 // note on
@@ -129,6 +139,7 @@ static void note_on(struct voice *v, uint8_t vel) {
 	gpio_set(IO_LED_AMBER); // flash the led when a note comes in
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
+	adsr_attack(&vs->wg.adsr);
 
 	
 	// notes below C2 can't be processed as they make the delay line too large
@@ -153,7 +164,8 @@ static void note_off(struct voice *v, uint8_t vel) {
 	gpio_clr(IO_LED_AMBER);
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	wg_ctrl_reflection(&vs->wg,ps->reflection + ps->release); // TODO (release)
+	wg_ctrl_reflection(&vs->wg,ps->reflection);
+	adsr_release(&vs->wg.adsr);
 
 }
 
@@ -178,12 +190,16 @@ static void init(struct patch *p) {
 	ps->vol = 1.0f;
 	ps->pan = 0.5f;
 	ps->bend = 0.0f;
-	ps->reflection = -0.99f;
+	ps->reflection = -1.0f;
 	ps->release = 0.0f;
 	ps->stiffness = 1.0f;
 	ps->exciter_type = 0.0f;
 	ps->exciter_loc = 0.25f;
 	ps->brightness = 1.0f;
+	ps->a = 0.0f;
+	ps->d = 2.0f;
+	ps->s = 1.0f;
+	ps->r = 1.0f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -193,14 +209,14 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	DBG("p7 ctrl %d val %d\r\n", ctrl, val);
 
 	switch (ctrl) {
-	case 75:		// volume
-		ps->vol = midi_map(val, 0.f, 1.5f);
-		update = 1;
-		break;
-	case 72:		// left/right pan
-		ps->pan = midi_map(val, 0.f, 1.f);
-		update = 1;
-		break;
+	// case 75:		// volume
+	// 	ps->vol = midi_map(val, 0.f, 1.5f);
+	// 	update = 1;
+	// 	break;
+	// case 72:		// left/right pan
+	// 	ps->pan = midi_map(val, 0.f, 1.f);
+	// 	update = 1;
+	// 	break;
 	case 91:
 		ps->reflection = midi_map(val, -0.95f, -1.0f);
 		update = 2;
@@ -217,8 +233,24 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->brightness = midi_map(val, 0.05f, 1.0f);
 		update = 5;
 		break;
+	// case 73:
+	// 	ps->release = midi_map(val, 0.1f, 0.0f);
+	// 	break;
 	case 73:
-		ps->release = midi_map(val, 0.1f, 0.0f);
+		ps->a = midi_map(val, 0.0f, 5.f);
+		update = 7;
+		break;
+	case 75:
+		ps->d = midi_map(val, 0.02f, 5.f);
+		update = 7;
+		break;
+	case 72:
+		ps->s = midi_map(val, 0.0f, 1.f);
+		update = 7;
+		break;
+	case 10:
+		ps->r = midi_map(val, 0.0f, 4.f);
+		update = 7;
 		break;
 	case 96:
 		ps->exciter_type += 1;
@@ -253,6 +285,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	}
 	if (update == 6) {
 		update_voices(p, ctrl_exciter_type);
+	}
+	if (update == 7) {
+		update_voices(p, ctrl_adsr);
 	}
 }
 

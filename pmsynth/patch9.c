@@ -191,11 +191,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 2;
 		break;
 	case 73:
-		ps->a = midi_map(val, 0.05f, 1.f);
+		ps->a = midi_map(val, 0.05f, 3.f);
 		update = 3;
 		break;
 	case 75:
-		ps->d = midi_map(val, 0.0f, 1.f);
+		ps->d = midi_map(val, 0.0f, 3.f);
 		update = 3;
 		break;
 	case 72:
@@ -203,7 +203,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 3;
 		break;
 	case 10:
-		ps->r = midi_map(val, 0.0f, 1.f);
+		ps->r = midi_map(val, 0.0f, 50.f);
 		update = 3;
 		break;
 	case 97:

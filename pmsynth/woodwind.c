@@ -46,7 +46,7 @@ void ww_gen(struct ww *osc, float *out, size_t n) {
 	adsr_gen(&osc->adsr, am, n);
 	noise_gen_white(&osc->ns, breath, n);
 
-	//block_mul(breath, am, n); // white noise following adsr
+	block_mul(breath, am, n); // white noise following adsr
 	block_mul_k(breath, 0.0085f, n); // scaling white noise
 
 	block_mul_k(vibrato, 0.008f, n); // scaling vibrato

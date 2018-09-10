@@ -107,7 +107,7 @@ static float adsr_sample(struct adsr *e) {
 	case ADSR_STATE_RELEASE:
 		// release until idle level
 		if (e->val > e->i_trigger) {
-			e->val += e->kr * (0.f - e->val);
+			e->val += e->kr * 0.1f * (0.f - e->val);
 		} else {
 			// goto idle state
 			e->val = 0.f;

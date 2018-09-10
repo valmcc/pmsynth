@@ -11,6 +11,8 @@ Low Pass Filters
 #define DEBUG
 #include "logging.h"
 
+
+
 //-----------------------------------------------------------------------------
 // State Variable Filter
 // See: Hal Chamberlin's "Musical Applications of Microprocessors" pp.489-492.
@@ -25,7 +27,7 @@ void svf_gen(struct svf *f, float *out, const float *in, size_t n) {
 		lp += kf * bp;
 		float hp = in[i] - lp - (kq * bp);
 		bp += kf * hp;
-		out[i] = lp;
+		out[i] = bp;
 	}
 
 	// update the state variables
@@ -68,7 +70,7 @@ void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n) {
 		v2 = ic2eq + (a2 * ic1eq) + (a3 * v3);
 		ic1eq = (2.f * v1) - ic1eq;
 		ic2eq = (2.f * v2) - ic2eq;
-		out[i] = v2;	// low
+		out[i] = v1;	// band
 		// low = v2;
 		// band = v1;
 		// high = v0 - (f->k * v1) - v2;

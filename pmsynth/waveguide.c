@@ -21,8 +21,13 @@ Waveguide synth
 
 
 void wg_gen(struct wg *osc, float *out, size_t n) {
+	float am[n];
+	adsr_gen(&osc->adsr, am, n);
 	for (size_t i = 0; i < n; i++) {
 		// pointer edition
+
+
+
 		if (i % osc->downsample_amt == 0){
 			float mallet_out = 0;
 			if (osc->estate == 1){
@@ -52,7 +57,7 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 								(frac) * osc->delay_r[osc->x_pos_r_2];
 
 
-			// added scaling factor for frac due to linear interp varying amplitudes
+			// added scaling factor for frac due to linear interp varying amplitudes due to low pass effect
 			out[i] = ((osc->velocity) / 0.8f + 0.2f) * 0.75f * (frac) * (osc->delay_l[osc->x_pos_l] + 
 				osc->delay_r[osc->x_pos_r]);
 
@@ -93,9 +98,9 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 				osc->pickup_pos = 0;
 			}
 		} else
-		out[i] = out [i-1]; // sample and hold (least cpu)
-
+		out[i] = out[i-1]; // sample and hold (least cpu usage)
 	} 
+	block_mul(out, am, n);
 }
 
 //-----------------------------------------------------------------------------

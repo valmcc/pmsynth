@@ -173,6 +173,7 @@ void ks_ctrl_frequency(struct ks *osc, float freq);
 void ks_ctrl_attenuate(struct ks *osc, float attenuate);
 void ks_pluck(struct ks *osc);
 void ks_gen(struct ks *osc, float *out, size_t n);
+
 //-----------------------------------------------------------------------------
 // Waveguide synth
 
@@ -209,7 +210,7 @@ struct wg {
 	float lp_coef_a; //not implemented - for breath control
 	float lp_coef_b;
 	int tube; //positive or negative reflection?
-
+	struct adsr adsr;
 };
 
 void wg_init(struct wg *osc);
@@ -467,6 +468,7 @@ extern const struct patch_ops patch6;
 extern const struct patch_ops patch7;
 extern const struct patch_ops patch8;
 extern const struct patch_ops patch9;
+extern const struct patch_ops patch10;
 
 //-----------------------------------------------------------------------------
 
@@ -486,6 +488,33 @@ struct pmsynth {
 
 int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *midi);
 int pmsynth_run(struct pmsynth *s);
+
+//-----------------------------------------------------------------------------
+// banded waveguide synth
+
+#define WGB_DELAY_BITS (8U)
+#define WGB_DELAY_SIZE (1U << WGB_DELAY_BITS)
+
+struct wgb {
+	float freq;		// base frequency
+	float delay[WGB_DELAY_SIZE];
+	float k;		// attenuation and averaging constant 0 to 0.5
+	uint32_t x;		// phase position
+	uint32_t xstep;		// phase step per sample
+	uint32_t delay_len;
+	uint32_t dl_ptr_in;
+	uint32_t dl_ptr_out;
+	uint8_t estate;
+	struct svf2 bpf;
+	float dc_filt_out;
+	float dc_filt_in;
+};
+
+void wgb_init(struct wgb *osc);
+void wgb_ctrl_frequency(struct wgb *osc, float freq);
+void wgb_ctrl_attenuate(struct wgb *osc, float attenuate);
+void wgb_pluck(struct wgb *osc);
+void wgb_gen(struct wgb *osc, float *out, size_t n);
 
 //-----------------------------------------------------------------------------
 // Handler functions
