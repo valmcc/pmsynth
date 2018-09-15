@@ -229,7 +229,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->exciter_loc = midi_map(val, 0.08f, 0.5f);
 		update = 4;
 		break;
-	case 71:
+	case 71: // exciter velocity
 		ps->brightness = midi_map(val, 0.05f, 1.0f);
 		update = 5;
 		break;

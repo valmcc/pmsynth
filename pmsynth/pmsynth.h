@@ -516,6 +516,9 @@ struct wgb {
 	float bp_res; // bp filter coef
 	struct adsr adsr;
 	float velocity;
+	float brightness;
+	float mode_mix_amt;
+	float h_coef;
 };
 // for exciter!
 float mallet_gen_wgb(struct wgb *osc);
@@ -525,8 +528,10 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq);
 void wgb_ctrl_attenuate(struct wgb *osc, float attenuate);
 void wgb_pluck(struct wgb *osc);
 void wgb_gen(struct wgb *osc, float *out, size_t n);
-void wgb_filter_ctrl(struct wgb *osc, float allpass);
+void wgb_ctrl_brightness(struct wgb *osc, float brightness);
+void wgb_ctrl_mode_mix_amt(struct wgb *osc, float mode_mix_amt);
 void wgb_set_velocity(struct wgb *osc, float velocity);
+void wgb_ctrl_harmonic_mod(struct wgb *osc, float h_coef);
 
 //-----------------------------------------------------------------------------
 // Handler functions

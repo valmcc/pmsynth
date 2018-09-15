@@ -89,7 +89,7 @@ static float adsr_sample(struct adsr *e) {
 	case ADSR_STATE_DECAY:
 		// decay until sustain level
 		if (e->val > e->s_trigger) {
-			e->val += e->kd * (e->s - e->val);
+			e->val += e->kd * 0.1f * (e->s - e->val);
 		} else {
 			if (e->s != 0.f) {
 				// goto sustain state
