@@ -318,7 +318,11 @@ float mallet_gen_2d(struct wg_2d *osc);
 
 
 //-----------------------------------------------------------------------------
-// Low Pass Filters
+// Filters
+
+#define FILT_BAND_PASS 0
+#define FILT_LOW_PASS 1
+#define FILT_HIGH_PASS 2
 
 struct svf {
 	float kf;		// constant for cutoff frequency
@@ -341,7 +345,8 @@ struct svf2 {
 void svf2_ctrl_cutoff(struct svf2 *f, float cutoff);
 void svf2_ctrl_resonance(struct svf2 *f, float resonance);
 void svf2_init(struct svf2 *f);
-void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n);
+void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n, uint16_t filter_type);
+void svf2_gen_lpf(struct svf2 *f, float *out, const float *in, size_t n, uint16_t filter_type);
 
 //-----------------------------------------------------------------------------
 // Note Sequencer
@@ -500,7 +505,7 @@ int pmsynth_run(struct pmsynth *s);
 struct mode {
 	float freq_coef; // frequency coefficient of this mode (eg 1 = base freq)
 	float delay[WGB_DELAY_SIZE];
-	struct svf2 bpf;
+	struct svf2 bpf; // bandpass for each mode
 	uint32_t dl_ptr_in;
 	uint32_t dl_ptr_out;
 	uint32_t delay_len;
@@ -519,6 +524,9 @@ struct wgb {
 	float brightness;
 	float mode_mix_amt;
 	float h_coef;
+	float out_filt_freq;
+	float out_filt_res;
+	struct svf2 opf; // filter for the output
 };
 // for exciter!
 float mallet_gen_wgb(struct wgb *osc);
@@ -532,6 +540,9 @@ void wgb_ctrl_brightness(struct wgb *osc, float brightness);
 void wgb_ctrl_mode_mix_amt(struct wgb *osc, float mode_mix_amt);
 void wgb_set_velocity(struct wgb *osc, float velocity);
 void wgb_ctrl_harmonic_mod(struct wgb *osc, float h_coef);
+// for output filter
+void wgb_ctrl_opf_freq(struct wgb *osc, float freq);
+void wgb_ctrl_opf_res(struct wgb *osc, float res);
 
 //-----------------------------------------------------------------------------
 // Handler functions

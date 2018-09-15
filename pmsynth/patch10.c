@@ -37,6 +37,8 @@ struct p_state {
 	float d;
 	float s;
 	float r;
+	float opf_freq;
+	float opf_res;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -87,6 +89,17 @@ static void ctrl_harm_coef(struct voice *v) {
 	wgb_ctrl_harmonic_mod(&vs->wgb, ps->h_coef);
 }
 
+static void ctrl_opf_freq(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wgb_ctrl_opf_freq(&vs->wgb, ps->opf_freq);
+}
+
+static void ctrl_opf_res(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wgb_ctrl_opf_res(&vs->wgb, ps->opf_res);
+}
 
 //-----------------------------------------------------------------------------
 // voice operations
@@ -101,6 +114,10 @@ static void start(struct voice *v) {
 	adsr_init(&vs->wgb.adsr, ps->a, ps->d, ps->s, ps->r);
 	wgb_init(&vs->wgb);
 	pan_init(&vs->pan);
+
+	// setting up output filter
+	ctrl_opf_freq(v);
+	ctrl_opf_res(v);
 
 	ctrl_brightness(v);
 	ctrl_harm_coef(v);
@@ -171,6 +188,8 @@ static void init(struct patch *p) {
 	ps->r = 1.0f;
 	ps->mode_mix_amt = 0.1f;
 	ps->h_coef = 0.f;
+	ps->opf_freq = 20000.f;
+	ps->opf_res = 0.f;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -192,13 +211,21 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->attenuate = midi_map(val, 0.87f, 1.f);
 		update = 2;
 		break;
-	case 71: // exciter velocity
-		ps->brightness = midi_map(val, 0.05f, 1.0f);
-		update = 5;
+	// case 71: // exciter velocity
+	// 	ps->brightness = midi_map(val, 0.05f, 1.0f);
+	// 	update = 5;
+	// 	break;
+	// case 74: // harmonic mod
+	// 	ps->h_coef = midi_map(val, -1.0f, 1.0f);
+	// 	update = 4;
+	// 	break;
+	case 71: // output filter frequency
+		ps->opf_freq = midi_map(val, 0.12f, 1.f);
+		update = 11;
 		break;
-	case 74: // harmonic mod
-		ps->h_coef = midi_map(val, -1.0f, 1.0f);
-		update = 4;
+	case 74: // output filter resonance
+		ps->opf_res = midi_map(val, 0.f, 0.8f);
+		update = 12;
 		break;
 	case 93: // mode mixing
 		ps->mode_mix_amt = midi_map(val, 0.0f, 1.0f);
@@ -243,6 +270,12 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	}
 	if (update == 7) {
 		update_voices(p, ctrl_adsr);
+	}
+	if (update == 11) {
+		update_voices(p, ctrl_opf_freq);
+	}
+	if (update == 12) {
+		update_voices(p, ctrl_opf_res);
 	}
 }
 

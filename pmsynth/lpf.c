@@ -55,7 +55,7 @@ void svf_init(struct svf *f) {
 // State Variable Filter
 // https://cytomic.com/files/dsp/SvfLinearTrapOptimised2.pdf
 
-void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n) {
+void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n, uint16_t filter_type) {
 	float ic1eq = f->ic1eq;
 	float ic2eq = f->ic2eq;
 	float a1 = 1.f / (1.f + (f->g * (f->g + f->k)));
@@ -70,7 +70,66 @@ void svf2_gen(struct svf2 *f, float *out, const float *in, size_t n) {
 		v2 = ic2eq + (a2 * ic1eq) + (a3 * v3);
 		ic1eq = (2.f * v1) - ic1eq;
 		ic2eq = (2.f * v2) - ic2eq;
-		out[i] = v1;	// band
+		out[i] = v1;
+		// switch (filter_type) {
+		// 	case FILT_BAND_PASS:		
+		// 		out[i] = v1;	// band
+		// 		break;
+		// 	case FILT_LOW_PASS:
+		// 		out[i] = v2;	// low
+		// 		break;
+		// 	case FILT_HIGH_PASS:
+		// 		out[i] = v0 - (f->k * v1) - v2; // high
+		// 		break;
+		// 	default:
+		// 		out[i] = v2; // default to low pass
+		// 		break;
+		// 	}
+
+		// low = v2;
+		// band = v1;
+		// high = v0 - (f->k * v1) - v2;
+		// notch = v0 - (f->k * v1);
+		// peak = v0 - (f->k * v1) - (2.f * v2);
+		// all = v0 - (2.f * f->k * v1);
+	}
+
+	// update the state variables
+	f->ic1eq = ic1eq;
+	f->ic2eq = ic2eq;
+}
+
+void svf2_gen_lpf(struct svf2 *f, float *out, const float *in, size_t n, uint16_t filter_type) {
+	float ic1eq = f->ic1eq;
+	float ic2eq = f->ic2eq;
+	float a1 = 1.f / (1.f + (f->g * (f->g + f->k)));
+	float a2 = f->g * a1;
+	float a3 = f->g * a2;
+
+	for (size_t i = 0; i < n; i++) {
+		float v0, v1, v2, v3;
+		v0 = in[i];
+		v3 = v0 - ic2eq;
+		v1 = (a1 * ic1eq) + (a2 * v3);
+		v2 = ic2eq + (a2 * ic1eq) + (a3 * v3);
+		ic1eq = (2.f * v1) - ic1eq;
+		ic2eq = (2.f * v2) - ic2eq;
+		//out[i] = v1;
+		// switch (filter_type) {
+		// 	case FILT_BAND_PASS:		
+		// 		out[i] = v1;	// band
+		// 		break;
+		// 	case FILT_LOW_PASS:
+		out[i] = v2;	// low
+		// 		break;
+		// 	case FILT_HIGH_PASS:
+		// 		out[i] = v0 - (f->k * v1) - v2; // high
+		// 		break;
+		// 	default:
+		// 		out[i] = v2; // default to low pass
+		// 		break;
+		// 	}
+
 		// low = v2;
 		// band = v1;
 		// high = v0 - (f->k * v1) - v2;

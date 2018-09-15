@@ -144,7 +144,7 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 	sin_gen(&vs->carrier, cout, fm, n);
 
 	// low pass filter
-	//svf2_gen(&vs->lpf, out, cout, n);
+	//svf2_gen(&vs->lpf, out, cout, n, FILT_LOW_PASS);
 	block_copy(out, cout, n);
 
 	// apply the output envelope

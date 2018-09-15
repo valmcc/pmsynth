@@ -38,7 +38,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 				}
 
 				out[i] += osc->mode[j].delay[osc->mode[j].dl_ptr_out]*osc->mode[j].mix_factor;
-				svf2_gen(&osc->mode[j].bpf, &osc->mode[j].delay[osc->mode[j].dl_ptr_out], &osc->mode[j].delay[osc->mode[j].dl_ptr_in], 1);
+				svf2_gen(&osc->mode[j].bpf, &osc->mode[j].delay[osc->mode[j].dl_ptr_out], &osc->mode[j].delay[osc->mode[j].dl_ptr_in], 1, FILT_BAND_PASS);
 				
 				osc->mode[j].dl_ptr_in += 1;
 					if (osc->mode[j].dl_ptr_in > osc->mode[j].delay_len){
@@ -61,8 +61,24 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 		// osc->ap_old_in = temp;
 	}
 	block_mul(out, am, n);
+	svf2_gen_lpf(&osc->opf, out, out, n, FILT_LOW_PASS);
 	block_mul_k(out, (osc->velocity / 0.8f + 0.2f), n);
 }
+
+//-----------------------------------------------------------------------------
+
+
+void wgb_ctrl_opf_freq(struct wgb *osc, float freq) {
+	freq *= 124.5;
+	freq = 440.0 * pow(2.0, (freq - 57.0)/12.0);
+	svf2_ctrl_cutoff(&osc->opf, freq);
+
+}
+void wgb_ctrl_opf_res(struct wgb *osc, float res) {
+	svf2_ctrl_resonance(&osc->opf, res);
+
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -71,7 +87,6 @@ void wgb_pluck(struct wgb *osc) {
 	osc->epos = 0;
 	osc->mode[0].dl_ptr_out = 1;
 	osc->mode[0].dl_ptr_in = 0;
-
 
 }
 
