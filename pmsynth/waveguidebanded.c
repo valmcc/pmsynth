@@ -54,7 +54,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 				out[i] = out[i] * 0.5f + out[i-1] *0.5f; // linear interp
 				}
 			}
-			//all pass filter for tuning!
+		//all pass filter for tuning!
 		// float temp = out[i];
 		// out[i] = - osc->a * out[i]+ osc->ap_old_in + osc->a * osc->ap_old_out;
 		// osc->ap_old_out = out[i];
