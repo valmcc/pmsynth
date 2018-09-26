@@ -29,7 +29,7 @@ Physical Modelling Synthesizer
 // global variables
 
 // number of simultaneous voices
-#define NUM_VOICES 8 // Max number of voices (polyphony)
+#define NUM_VOICES 12 // Max number of voices (polyphony)
 
 int current_patch_no; // what midi channel patch is currently playing
 int current_exciter_type; // for screen
@@ -211,6 +211,7 @@ struct wg {
 	float lp_coef_b;
 	int tube; //positive or negative reflection?
 	struct adsr adsr;
+	int impulse; // what impulse should we use to excite the waveguide?
 };
 
 void wg_init(struct wg *osc);
@@ -228,8 +229,8 @@ void wg_exciter_type(struct wg *osc, int exciter_type);
 //-----------------------------------------------------------------------------
 //exciter
 
-float mallet_lookup(int16_t x);
-float mallet_gen(struct wg *osc);
+float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate);
+float impulse_gen(struct wg *osc);
 
 
 //-----------------------------------------------------------------------------
@@ -306,6 +307,7 @@ struct wg_2d {
 	uint32_t epos; // excitation sample position (in wavetable)
 	uint16_t einc; //how much to increment exciter sample pointer
 	uint16_t ephase; //phase for increment exciter sample pointer
+	int impulse;
 };
 
 void wg_2d_init(struct wg_2d *osc);
@@ -314,7 +316,7 @@ void wg_2d_ctrl_attenuate(struct wg_2d *osc, float attenuate);
 void wg_2d_pluck(struct wg_2d *osc);
 void wg_2d_gen(struct wg_2d *osc, float *out, size_t n);
 // exciter
-float mallet_gen_2d(struct wg_2d *osc);
+float impulse_gen_2d(struct wg_2d *osc);
 
 
 //-----------------------------------------------------------------------------
@@ -508,9 +510,13 @@ struct mode {
 	struct svf2 bpf; // bandpass for each mode
 	uint32_t dl_ptr_in;
 	uint32_t dl_ptr_out;
+	uint32_t dl_ptr_lin_tuner_1;
+	uint32_t dl_ptr_lin_tuner_2;
 	uint32_t delay_len;
 	uint32_t downsample_amt;
 	float mix_factor;
+	float delay_len_frac;
+	float delay_len_total;
 };
 
 struct wgb {
@@ -527,9 +533,11 @@ struct wgb {
 	float out_filt_freq;
 	float out_filt_res;
 	struct svf2 opf; // filter for the output
+	int exciter;
+	int impulse;
 };
 // for exciter!
-float mallet_gen_wgb(struct wgb *osc);
+float impulse_gen_wgb(struct wgb *osc);
 
 void wgb_init(struct wgb *osc);
 void wgb_ctrl_frequency(struct wgb *osc, float freq);

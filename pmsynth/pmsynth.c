@@ -195,8 +195,8 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 
 
 	// setup the patch operations
-	s->patches[0].ops = &patch10;
-	//s->patches[0].ops = &patch7;
+	//s->patches[0].ops = &patch10;
+	s->patches[0].ops = &patch7;
 	s->patches[1].ops = &patch2;
 	s->patches[2].ops = &patch9;
 	//s->patches[2].ops = &patch1;

@@ -32,14 +32,34 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 				// mallet hit
 				float mallet_out = 0;
 				if (osc->estate == 1){
-					mallet_out = mallet_gen_wgb(osc);		
+					mallet_out = impulse_gen_wgb(osc);		
 					osc->mode[j].delay[osc->mode[j].dl_ptr_in] += mallet_out;
+					// uncomment for direct mallet output
 					//out[i] = mallet_out;
 				}
 
 				out[i] += osc->mode[j].delay[osc->mode[j].dl_ptr_out]*osc->mode[j].mix_factor;
 				svf2_gen(&osc->mode[j].bpf, &osc->mode[j].delay[osc->mode[j].dl_ptr_out], &osc->mode[j].delay[osc->mode[j].dl_ptr_in], 1, FILT_BAND_PASS);
+
+				//---------------------------------------------------------
+				// linear interp for tuning, currently only applies to lowest harmonic to save cpu
+				if (j == 0){
+				float frac = (float) osc->mode[j].delay_len_frac;
+
+				osc->mode[j].delay[osc->mode[j].dl_ptr_lin_tuner_2] = (frac) * osc->mode[j].delay[osc->mode[j].dl_ptr_lin_tuner_1] + (1.0f - frac) * osc->mode[j].delay[osc->mode[j].dl_ptr_lin_tuner_2];
 				
+				// wrapping linear interp pointers 
+				osc->mode[j].dl_ptr_lin_tuner_1 += 1;
+					if (osc->mode[j].dl_ptr_lin_tuner_1 > osc->mode[j].delay_len){
+						osc->mode[j].dl_ptr_lin_tuner_1 = 0;
+					}
+				osc->mode[j].dl_ptr_lin_tuner_2 += 1;
+					if (osc->mode[j].dl_ptr_lin_tuner_2 > osc->mode[j].delay_len){
+						osc->mode[j].dl_ptr_lin_tuner_2 = 0;
+					}
+				}
+				//----------------------------------------------------------
+
 				osc->mode[j].dl_ptr_in += 1;
 					if (osc->mode[j].dl_ptr_in > osc->mode[j].delay_len){
 						osc->mode[j].dl_ptr_in = 0;
@@ -51,7 +71,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 						osc->mode[j].delay[osc->mode[j].dl_ptr_out] = (osc->mode_mix_amt) * out[i] + (1.0f - osc->mode_mix_amt) * osc->mode[j].delay[osc->mode[j].dl_ptr_out];
 					}
 				} else {
-				out[i] = out[i] * 0.5f + out[i-1] *0.5f; // linear interp
+				out[i] = out[i] * 0.5f + out[i-1] *0.5f; // linear interp on output when downsampling
 				}
 			}
 		//all pass filter for tuning!
@@ -61,7 +81,10 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 		// osc->ap_old_in = temp;
 	}
 	block_mul(out, am, n);
-	svf2_gen_lpf(&osc->opf, out, out, n, FILT_LOW_PASS);
+
+	// low pass linked to envelope ended up being too cpu intensive so was removed
+	//svf2_gen_lpf(&osc->opf, out, out, n, FILT_LOW_PASS);
+
 	block_mul_k(out, (osc->velocity / 0.8f + 0.2f), n);
 }
 
@@ -69,6 +92,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 
 
 void wgb_ctrl_opf_freq(struct wgb *osc, float freq) {
+	// tuning the frequency to a reasonable range
 	freq *= 124.5;
 	freq = 440.0 * pow(2.0, (freq - 57.0)/12.0);
 	svf2_ctrl_cutoff(&osc->opf, freq);
@@ -85,8 +109,13 @@ void wgb_ctrl_opf_res(struct wgb *osc, float res) {
 void wgb_pluck(struct wgb *osc) {
 	osc->estate = 1;
 	osc->epos = 0;
-	osc->mode[0].dl_ptr_out = 1;
-	osc->mode[0].dl_ptr_in = 0;
+	for (size_t i = 0; i < NUM_MODES; i++) {
+		osc->mode[i].dl_ptr_out = 1;
+		osc->mode[i].dl_ptr_in = 0;
+
+		osc->mode[i].dl_ptr_lin_tuner_1 = 2;
+		osc->mode[i].dl_ptr_lin_tuner_2 = 3;
+	}
 
 }
 
@@ -118,11 +147,19 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 		if (delay_len > WGB_DELAY_SIZE) {
 			uint32_t rough_ds = (delay_len / WGB_DELAY_SIZE) + 1;
 			osc->mode[i].downsample_amt = rough_ds + rough_ds % 2;
-			osc->mode[i].delay_len = delay_len / osc->mode[i].downsample_amt;
+
+			osc->mode[i].delay_len_total = delay_len / osc->mode[i].downsample_amt;
+
+			osc->mode[i].delay_len  = (uint32_t) osc->mode[i].delay_len_total;
+			osc->mode[i].delay_len_frac = osc->mode[i].delay_len_total - (float) osc->mode[i].delay_len;
+
 		} else {
 			osc->mode[i].downsample_amt = 1;
-			osc->mode[i].delay_len = delay_len;
+			osc->mode[i].delay_len_total = delay_len;
+			osc->mode[i].delay_len  = (uint32_t) osc->mode[i].delay_len_total;
+			osc->mode[i].delay_len_frac = osc->mode[i].delay_len_total - (float) osc->mode[i].delay_len;
 		}
+		DBG("delay length for mode %d: %d.%d \r\n", i, osc->mode[i].delay_len, (uint32_t) osc->mode[i].delay_len_frac * 100.0f);
 		svf2_ctrl_cutoff(&osc->mode[i].bpf, osc->mode[i].freq_coef * freq * osc->mode[i].downsample_amt);
 		svf2_ctrl_resonance(&osc->mode[i].bpf, 0.4999999f);
 		

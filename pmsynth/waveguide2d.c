@@ -31,7 +31,7 @@ void wg_2d_gen(struct wg_2d *osc, float *out, size_t n) {
 
 			// mallet hit
 			if (osc->estate == 1){
-				mallet_out = mallet_gen_2d(osc);		
+				mallet_out = impulse_gen_2d(osc);		
 			} 
 
 			// calculate junction velocity
@@ -67,7 +67,7 @@ void wg_2d_gen(struct wg_2d *osc, float *out, size_t n) {
 			// TOCK
 			// mallet hit
 			if (osc->estate == 1){
-				mallet_out = mallet_gen_2d(osc);		
+				mallet_out = impulse_gen_2d(osc);		
 			} 
 
 			// calculate junction velocity

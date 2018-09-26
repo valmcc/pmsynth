@@ -532,10 +532,10 @@ void update_patch(){
 void update_polyphony(){
 	switch(current_patch_no) {
 		case WAVEGUIDE_1D:
-			global_polyphony = 6; // TODO change
+			global_polyphony = 12; 
 		break;
 		case KARPLUS_STRONG:
-			global_polyphony = 16;
+			global_polyphony = 12;
 		break;
 		case WOODWIND:
 			global_polyphony = 8;

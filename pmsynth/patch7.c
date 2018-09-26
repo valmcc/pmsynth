@@ -52,7 +52,8 @@ _Static_assert(sizeof(struct p_state) <= PATCH_STATE_SIZE, "sizeof(struct p_stat
 static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	if (v->note < 57){
+	//if (v->note < 57){
+	if (v->note < 48){
 		wg_set_samplerate(&vs->wg,2); // halve sample rate
 	}
 	if (v->note < 33){

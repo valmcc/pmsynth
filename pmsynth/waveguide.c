@@ -31,7 +31,7 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 		if (i % osc->downsample_amt == 0){
 			float mallet_out = 0;
 			if (osc->estate == 1){
-				mallet_out = mallet_gen(osc);		
+				mallet_out = impulse_gen(osc);		
 				osc->delay_l[osc->x_pos_l] += mallet_out;
 				osc->delay_r[osc->x_pos_r] += mallet_out;
 				//out[i] = mallet_out;
@@ -98,9 +98,11 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 				osc->pickup_pos = 0;
 			}
 		} else
-		out[i] = out[i-1]; // sample and hold (least cpu usage)
+		out[i] = out[i] * 0.5f + out[i-1] *0.5f; // linear interp
+		osc->epos += 1; // incrementing impulse sample
 	} 
 	block_mul(out, am, n);
+	//svf2_gen_lpf(&osc->opf, out, out, n, FILT_LOW_PASS); //TODO remove
 }
 
 //-----------------------------------------------------------------------------
