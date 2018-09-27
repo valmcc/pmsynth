@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 /*
 
-Attack Decay Sustain Release Envelopes
+ADSR Envelopes
 
 */
 //-----------------------------------------------------------------------------
@@ -77,6 +77,7 @@ static float adsr_sample(struct adsr *e) {
 		// idle - do nothing
 		break;
 	case ADSR_STATE_ATTACK:
+		gpio_set(IO_ATTACK_LED);
 		// attack until 1.0 level
 		if (e->val < e->d_trigger) {
 			e->val += e->ka * (1.f - e->val);
@@ -87,6 +88,8 @@ static float adsr_sample(struct adsr *e) {
 		}
 		break;
 	case ADSR_STATE_DECAY:
+		gpio_clr(IO_ATTACK_LED);
+		gpio_set(IO_DECAY_LED);
 		// decay until sustain level
 		if (e->val > e->s_trigger) {
 			e->val += e->kd * 0.1f * (e->s - e->val);
@@ -103,14 +106,19 @@ static float adsr_sample(struct adsr *e) {
 		}
 		break;
 	case ADSR_STATE_SUSTAIN:
+		gpio_set(IO_SUSTAIN_LED);
+		gpio_clr(IO_DECAY_LED);
 		// sustain - do nothing
 		break;
 	case ADSR_STATE_RELEASE:
+		gpio_set(IO_RELEASE_LED);
+		gpio_clr(IO_SUSTAIN_LED);
 		// release until idle level
 		if (e->val > e->i_trigger) {
 			e->val += e->kr * 0.1f * (0.f - e->val);
 		} else {
 			// goto idle state
+			gpio_clr(IO_RELEASE_LED);
 			e->val = 0.f;
 			e->state = ADSR_STATE_IDLE;
 		}

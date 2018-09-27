@@ -28,6 +28,28 @@ Physical Modelling Synthesizer
 //-----------------------------------------------------------------------------
 // global variables
 
+// Button mappings for midi keyboard
+
+#define MODWHEEL 75
+
+#define KNOB_1 91
+#define KNOB_2 93
+#define KNOB_3 74
+#define KNOB_4 71
+#define KNOB_5 73
+#define KNOB_6 75
+#define KNOB_7 72
+#define KNOB_8 10
+
+#define BUTTON_1 97
+#define BUTTON_2 96
+#define BUTTON_3 66
+#define BUTTON_4 67
+#define BUTTON_5 64
+#define BUTTON_6 65
+#define BUTTON_7 7
+#define BUTTON_8 10
+
 // number of simultaneous voices
 #define NUM_VOICES 12 // Max number of voices (polyphony)
 

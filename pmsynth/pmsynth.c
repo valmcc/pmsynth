@@ -63,8 +63,9 @@ void stop_voices(struct patch *p) {
 			v->patch->ops->stop(v);
 		}
 
-		voice_alloc(p->pmsynth, 5, 42); // overwrites all voices with a dummy voice (channel 5)
+		//voice_alloc(p->pmsynth, 5, 42); // overwrites all voices with a dummy voice (channel 5)
 	}
+	p->pmsynth->voice_idx = 0;
 }
 
 

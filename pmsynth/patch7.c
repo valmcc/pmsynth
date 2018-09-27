@@ -138,6 +138,7 @@ static void stop(struct voice *v) {
 static void note_on(struct voice *v, uint8_t vel) {
 	DBG("p7 note on v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	gpio_set(IO_LED_AMBER); // flash the led when a note comes in
+	//gpio_set(IO_ATTACK_LED);
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	adsr_attack(&vs->wg.adsr);
@@ -163,6 +164,7 @@ static void note_on(struct voice *v, uint8_t vel) {
 // note off
 static void note_off(struct voice *v, uint8_t vel) {
 	gpio_clr(IO_LED_AMBER);
+	//gpio_clr(IO_ATTACK_LED);
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	wg_ctrl_reflection(&vs->wg,ps->reflection);
@@ -191,7 +193,7 @@ static void init(struct patch *p) {
 	ps->vol = 1.0f;
 	ps->pan = 0.5f;
 	ps->bend = 0.0f;
-	ps->reflection = -1.0f;
+	ps->reflection = -0.99f;
 	ps->release = 0.0f;
 	ps->stiffness = 1.0f;
 	ps->exciter_type = 0.0f;
@@ -238,7 +240,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	// 	ps->release = midi_map(val, 0.1f, 0.0f);
 	// 	break;
 	case 73:
-		ps->a = midi_map(val, 0.0f, 5.f);
+		ps->a = midi_map(val, 0.0f, 0.5f);
 		update = 7;
 		break;
 	case 75:
@@ -252,6 +254,9 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	case 10:
 		ps->r = midi_map(val, 0.0f, 4.f);
 		update = 7;
+		break;
+	case BUTTON_7:
+		stop_voices(p);
 		break;
 	case 96:
 		ps->exciter_type += 1;
