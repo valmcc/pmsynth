@@ -28,7 +28,7 @@ Note durations are specified with a tick count.
 #define DURATION1 64		// whole note
 #define DURATION2 32		// half note
 #define DURATION4 16		// quarter note
-#define DURATION8 8		// 1/8 note
+#define DURATION8 8			// 1/8 note
 #define DURATION16 4		// 1/16 note
 #define DURATION32 2		// 1/32 note
 #define DURATION64 1		// 1/64 note
@@ -148,9 +148,9 @@ enum {
 
 static int (*op_table[OP_NUM]) (struct seq * s, struct seq_sm * m) = {
 	op_nop,			// OP_NOP
-	    op_loop,		// OP_LOOP
-	    op_note,		// OP_NOTE
-	    op_rest,		// OP_REST
+	op_loop,		// OP_LOOP
+	op_note,		// OP_NOTE
+	op_rest,		// OP_REST
 };
 
 static void ssm_tick(struct seq *s, struct seq_sm *m) {

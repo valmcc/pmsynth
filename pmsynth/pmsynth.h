@@ -30,7 +30,8 @@ Physical Modelling Synthesizer
 
 // Button mappings for midi keyboard
 
-#define MODWHEEL 75
+#define MODWHEEL 1
+#define VOLUME_SLIDER 8
 
 #define KNOB_1 91
 #define KNOB_2 93
@@ -52,6 +53,8 @@ Physical Modelling Synthesizer
 
 // number of simultaneous voices
 #define NUM_VOICES 12 // Max number of voices (polyphony)
+
+#define NUM_IMPULSES 4 // Number of impulse samples saved on device
 
 int current_patch_no; // what midi channel patch is currently playing
 int current_exciter_type; // for screen
@@ -196,64 +199,6 @@ void ks_ctrl_attenuate(struct ks *osc, float attenuate);
 void ks_pluck(struct ks *osc);
 void ks_gen(struct ks *osc, float *out, size_t n);
 
-//-----------------------------------------------------------------------------
-// Waveguide synth
-
-#define WG_DELAY_BITS (8U) //increased from 7
-#define WG_DELAY_SIZE (1U << WG_DELAY_BITS) // this is the max delay size
-
-struct wg {
-	float freq;		// base frequency
-	float delay_l[WG_DELAY_SIZE];		// left travelling wave
-	float delay_r[WG_DELAY_SIZE];		//right travelling wave
-	float r;		// reflection constant
-	uint32_t epos; // excitation sample position (in wavetable)
-	int estate; // excitement state (1 = excited, 0 = not)
-	uint16_t einc; //how much to increment exciter sample pointer
-	uint16_t ephase; //phase for increment exciter sample pointer
-	uint32_t delay_len; // length of delay line
-	float delay_len_frac; // extra fractional delay length
-	float delay_len_total; // total fractional delay length
-	float a; // all-pass filter coefficient
-	uint32_t excite_pos;// excitement location
-	float excite_loc; // percentage location of exciter
-	uint32_t x_pos_l; // pointers for delay line
-	uint32_t x_pos_r; // pointers for delay line
-	uint32_t bridge_pos; // edge condition locations
-	uint32_t nut_pos; // edge condition locations
-	uint32_t pickup_pos; // pickup location
-	uint32_t x_pos_l_2; // pointers to delay line for linear interpolation
-	uint32_t x_pos_r_2; // pointers to delay line for linear interpolation
-	float ap_state_1; // all pass filter previous values
-	float ap_state_2; // all pass filter previous values
-	float ap_stiff; // all pass filter "stiffness"
-	float velocity;
-	uint32_t downsample_amt; // downsampling by halving the length of the delay line
-	float lp_coef_a; //not implemented - for breath control
-	float lp_coef_b;
-	int tube; //positive or negative reflection?
-	struct adsr adsr;
-	int impulse; // what impulse should we use to excite the waveguide?
-};
-
-void wg_init(struct wg *osc);
-void wg_ctrl_frequency(struct wg *osc, float freq);
-void wg_ctrl_reflection(struct wg *osc, float reflection);
-void wg_ctrl_stiffness(struct wg *osc, float stiffness);
-void wg_ctrl_pos(struct wg *osc, float excite_loc);
-void wg_ctrl_brightness(struct wg *osc, float brightness);
-void wg_excite(struct wg *osc);
-void wg_set_velocity(struct wg *osc, float velocity);
-void wg_gen(struct wg *osc, float *out, size_t n);
-void wg_set_samplerate(struct wg *osc, float downsample_amt);
-void wg_exciter_type(struct wg *osc, int exciter_type);
-//
-//-----------------------------------------------------------------------------
-//exciter
-
-float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate);
-float impulse_gen(struct wg *osc);
-
 
 //-----------------------------------------------------------------------------
 // Woodwind synth
@@ -287,6 +232,8 @@ struct ww {
 	float r_1; // reflection coefs
 	float r_2;
 	float lp_filter_coef;
+	float noise_amt;
+	float vibrato_amt;
 
 };
 
@@ -294,6 +241,7 @@ void ww_init(struct ww *osc);
 void ww_set_samplerate(struct ww *osc, float downsample_amt);
 void ww_ctrl_frequency(struct ww *osc, float freq);
 void ww_ctrl_attenuate(struct ww *osc, float attenuate);
+void ww_update_vib_noise(struct ww *osc, float vibrato_amt, float noise_amt);
 void ww_update_coefficients(struct ww *osc, float lp_filter_coef, float r_1, float r_2);
 void ww_blow(struct ww *osc);
 void ww_gen(struct ww *osc, float *out, size_t n);
@@ -514,10 +462,72 @@ struct pmsynth {
 	struct patch patches[NUM_CHANNELS];	// current patch set
 	struct voice voices[NUM_VOICES];	// voices
 	int voice_idx;		// FIXME round robin voice allocation
+	struct svf2 opf; // filter for the output
 };
 
 int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *midi);
 int pmsynth_run(struct pmsynth *s);
+
+//-----------------------------------------------------------------------------
+// Waveguide synth
+
+#define WG_DELAY_BITS (8U) //increased from 7
+#define WG_DELAY_SIZE (1U << WG_DELAY_BITS) // this is the max delay size
+
+struct wg {
+	float freq;		// base frequency
+	float delay_l[WG_DELAY_SIZE];		// left travelling wave
+	float delay_r[WG_DELAY_SIZE];		//right travelling wave
+	float r;		// reflection constant
+	uint32_t epos; // excitation sample position (in wavetable)
+	int estate; // excitement state (1 = excited, 0 = not)
+	uint16_t einc; //how much to increment exciter sample pointer
+	uint16_t ephase; //phase for increment exciter sample pointer
+	uint32_t delay_len; // length of delay line
+	float delay_len_frac; // extra fractional delay length
+	float delay_len_total; // total fractional delay length
+	float a; // all-pass filter coefficient
+	uint32_t excite_pos;// excitement location
+	float excite_loc; // percentage location of exciter
+	uint32_t x_pos_l; // pointers for delay line
+	uint32_t x_pos_r; // pointers for delay line
+	uint32_t bridge_pos; // edge condition locations
+	uint32_t nut_pos; // edge condition locations
+	uint32_t pickup_pos; // pickup location
+	uint32_t x_pos_l_2; // pointers to delay line for linear interpolation
+	uint32_t x_pos_r_2; // pointers to delay line for linear interpolation
+	float ap_state_1; // all pass filter previous values
+	float ap_state_2; // all pass filter previous values
+	float ap_stiff; // all pass filter "stiffness"
+	float velocity;
+	uint32_t downsample_amt; // downsampling by halving the length of the delay line
+	float lp_coef_a; //not implemented - for breath control
+	float lp_coef_b;
+	int tube; //positive or negative reflection?
+	struct adsr adsr;
+	int impulse; // what impulse should we use to excite the waveguide?
+	int impulse_solo; // should i solo the impulse?
+};
+
+void wg_init(struct wg *osc);
+void wg_ctrl_frequency(struct wg *osc, float freq);
+void wg_ctrl_reflection(struct wg *osc, float reflection);
+void wg_ctrl_stiffness(struct wg *osc, float stiffness);
+void wg_ctrl_pos(struct wg *osc, float excite_loc);
+void wg_ctrl_impulse_solo(struct wg *osc, int impulse_solo);
+void wg_excite(struct wg *osc);
+void wg_set_velocity(struct wg *osc, float velocity);
+void wg_gen(struct wg *osc, float *out, size_t n);
+void wg_set_samplerate(struct wg *osc, float downsample_amt);
+void wg_exciter_type(struct wg *osc, int exciter_type);
+void wg_ctrl_impulse_type(struct wg *osc, int impulse);
+//
+//-----------------------------------------------------------------------------
+//exciter
+
+float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate);
+float impulse_gen(struct wg *osc);
+
 
 //-----------------------------------------------------------------------------
 // banded waveguide synth

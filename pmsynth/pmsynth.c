@@ -133,9 +133,14 @@ static void audio_handler(struct pmsynth *s, struct event *e) {
 			block_add(out_r, buf_r, n);
 		}
 	}
+	// apply output lowpass filter
+	svf2_gen_lpf(&s->opf, out_l, out_l, n, FILT_LOW_PASS);
+	//svf2_gen_lpf(&s->opf, out_r, out_r, n, FILT_LOW_PASS);
+
 
 	// write the samples to the dma buffer
-	audio_wr(dst, n, out_l, out_r);
+	//audio_wr(dst, n, out_l, out_r);
+	audio_wr(dst, n, out_l, out_l); // TODO - just mono for now!
 	// record some realtime stats
 	audio_stats(s->audio, dst);
 }
@@ -196,15 +201,15 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 
 
 	// setup the patch operations
-	//s->patches[0].ops = &patch10;
 	s->patches[0].ops = &patch7;
 	s->patches[1].ops = &patch2;
 	s->patches[2].ops = &patch9;
+	s->patches[3].ops = &patch10;
 	//s->patches[2].ops = &patch1;
 	//s->patches[3].ops = &patch3;
 	//s->patches[4].ops = &patch5;
 	//s->patches[5].ops = &patch6;
-	//s->patches[6].ops = &patch4;
+	//s->patches[0].ops = &patch4;
 	//s->patches[7].ops = &patch8;
 	//s->patches[8].ops = &patch9;
 
@@ -227,6 +232,10 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 		v->channel = 255;
 		v->note = 255;
 	}
+
+	svf2_ctrl_resonance(&s->opf,0.0f);
+	svf2_ctrl_cutoff(&s->opf, 12000.0f); // init lowpass at 12kHz
+
 	update_patch();
 	update_exciter();
 	update_resonator();

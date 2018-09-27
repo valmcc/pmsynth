@@ -14,14 +14,14 @@ Patch and screen handler. Stores current state of the device for use in the midi
 
 // Number of implemented patches
 
-#define NUM_PATCHES 2
+#define NUM_PATCHES 3
 
 // Defines for patch numbers of instruments accessable by the keyboard
 
 #define WAVEGUIDE_1D 0
-#define KARPLUS_STRONG 1
+#define BANDED_WAVEGUIDE 1
 #define WOODWIND 2
-#define BANDED_WAVEGUIDE 3
+#define KARPLUS_STRONG 3
 
 // Defines for exciters
 

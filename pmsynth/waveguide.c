@@ -34,7 +34,9 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 				mallet_out = impulse_gen(osc);		
 				osc->delay_l[osc->x_pos_l] += mallet_out;
 				osc->delay_r[osc->x_pos_r] += mallet_out;
-				//out[i] = mallet_out;
+				//if (osc->impulse_solo){
+				//	out[i] = mallet_out;
+				//}
 			}
 
 			//DBG("epos=%d, etate=%d, mallet_out=%d\r\n",osc->epos,osc->estate, (int) (mallet_out*1000));
@@ -58,8 +60,11 @@ void wg_gen(struct wg *osc, float *out, size_t n) {
 
 
 			// added scaling factor for frac due to linear interp varying amplitudes due to low pass effect
-			out[i] = ((osc->velocity) / 0.8f + 0.2f) * 0.75f * (frac) * (osc->delay_l[osc->x_pos_l] + 
-				osc->delay_r[osc->x_pos_r]);
+			
+			out[i] = mallet_out * osc->impulse_solo + (
+				((osc->velocity) / 0.8f + 0.2f) * 0.75f * (frac) * (osc->delay_l[osc->x_pos_l] + 
+				osc->delay_r[osc->x_pos_r]))*(1.0f - osc->impulse_solo);
+
 
 
 			//stepping and wrapping pointers
@@ -139,6 +144,12 @@ void wg_excite(struct wg *osc) {
 
 //-----------------------------------------------------------------------------
 
+void wg_ctrl_impulse_type(struct wg *osc, int impulse) {
+	osc->epos = 0;
+	osc->estate = 0;
+	osc->impulse = impulse;
+}
+
 void wg_ctrl_reflection(struct wg *osc, float reflection) {
 	osc->r = reflection;
 }
@@ -161,8 +172,8 @@ void wg_ctrl_pos(struct wg *osc, float excite_loc) {
 	// needs to update position for current voices
 }
 
-void wg_ctrl_brightness(struct wg *osc, float brightness) {
-	osc->einc = (uint16_t) ((brightness + osc->velocity * 0.3f)*255.0f);
+void wg_ctrl_impulse_solo(struct wg *osc, int impulse_solo) {
+	osc->impulse_solo = impulse_solo;
 	//DBG("einc: %d\r\n", osc->einc);
 	// brightness (speed of exciter pluck)
 }

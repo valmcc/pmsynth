@@ -94,7 +94,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 void wgb_ctrl_opf_freq(struct wgb *osc, float freq) {
 	// tuning the frequency to a reasonable range
 	freq *= 124.5;
-	freq = 440.0 * pow(2.0, (freq - 57.0)/12.0);
+	freq = 440.0 * pow2((freq - 57.0)/12.0);
 	svf2_ctrl_cutoff(&osc->opf, freq);
 
 }

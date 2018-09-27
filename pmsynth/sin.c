@@ -5145,7 +5145,17 @@ static const int16_t val_hit_LUT_data[VAL_HIT_LUT_SIZE] = {
 float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate) {
 	int16_t y;
 	switch (impulse) {
-	case 2:
+	case 0:
+		y = mallet_hit_LUT_data[x];
+
+		*epos +=1;
+
+		if (*epos >= MALLET_LUT_MASK) {
+			*epos = 0;
+			*estate = 0;
+		}
+		break;
+	case 1:
 		y = viola_hit_LUT_data[x];
 
 		*epos +=1;
@@ -5155,17 +5165,7 @@ float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate) {
 			*estate = 0;
 		}
 		break;
-	case 1:
-		y = mallet_hit_LUT_data[x];
-
-		*epos +=1;
-
-		if (*epos >= MALLET_LUT_SIZE) {
-			*epos = 0;
-			*estate = 0;
-		}
-		break;
-	case 3:
+	case 2:
 		y = el_1_hit_LUT_data[x];
 
 		*epos +=1;
@@ -5175,7 +5175,7 @@ float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate) {
 			*estate = 0;
 		}
 		break;
-	case 4:
+	case 3:
 		y = hh_hit_LUT_data[x];
 
 		*epos +=1;
@@ -5185,7 +5185,7 @@ float impulse_lookup(int16_t x, int impulse, uint32_t *epos, int *estate) {
 			*estate = 0;
 		}
 		break;
-	case 0:
+	case 4:
 		y = val_hit_LUT_data[x];
 
 		*epos +=1;

@@ -41,6 +41,8 @@ struct p_state {
 	float d;
 	float s;
 	float r;
+	int impulse_type;
+	int impulse_solo;
 };
 
 _Static_assert(sizeof(struct v_state) <= VOICE_STATE_SIZE, "sizeof(struct v_state) > VOICE_STATE_SIZE");
@@ -86,12 +88,11 @@ static void ctrl_exciter_loc(struct voice *v) {
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 }
 
-static void ctrl_brightness(struct voice *v) {
+static void ctrl_impulse_solo(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	wg_ctrl_brightness(&vs->wg, ps->brightness);
+	wg_ctrl_impulse_solo(&vs->wg, ps->impulse_solo);
 }
-
 static void ctrl_exciter_type(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
@@ -104,6 +105,13 @@ static void ctrl_adsr(struct voice *v) {
 	adsr_update(&vs->wg.adsr, ps->a, ps->d, ps->s, ps->r);
 }
 
+static void ctrl_impulse_type(struct voice *v) {
+	struct v_state *vs = (struct v_state *)v->state;
+	struct p_state *ps = (struct p_state *)v->patch->state;
+	wg_ctrl_impulse_type(&vs->wg, ps->impulse_type);
+}
+
+
 //-----------------------------------------------------------------------------
 // voice operations
 
@@ -113,7 +121,6 @@ static void start(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
 	memset(vs, 0, sizeof(struct v_state));
-
 	adsr_init(&vs->wg.adsr, ps->a, ps->d, ps->s, ps->r);
 	wg_init(&vs->wg);
 	pan_init(&vs->pan);
@@ -122,8 +129,9 @@ static void start(struct voice *v) {
 	ctrl_reflection(v);
 	ctrl_stiffness(v);
 	ctrl_pan(v);
-	ctrl_brightness(v);
+	ctrl_impulse_solo(v);
 	ctrl_exciter_type(v);
+	ctrl_impulse_type(v);
 }
 
 // stop the patch
@@ -147,11 +155,12 @@ static void note_on(struct voice *v, uint8_t vel) {
 	// notes below C2 can't be processed as they make the delay line too large
 	if (v->note > 24){
 	// reflection
+	wg_ctrl_impulse_type(&vs->wg,ps->impulse_type);
 	wg_ctrl_reflection(&vs->wg,ps->reflection);
 	// velocity
 	wg_set_velocity(&vs->wg, (float)vel / 127.f);
 	// stiffness
-	wg_ctrl_brightness(&vs->wg,ps->brightness);
+	wg_ctrl_impulse_solo(&vs->wg,ps->impulse_solo);
 	// position
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 	wg_excite(&vs->wg);
@@ -182,7 +191,9 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 	struct v_state *vs = (struct v_state *)v->state;
 	float out[n];
 	wg_gen(&vs->wg, out, n);
-	pan_gen(&vs->pan, out_l, out_r, out, n);
+	block_copy(out_l, out, n);
+	block_copy(out_r, out, n);
+	//pan_gen(&vs->pan, out_l, out_r, out, n); // pan function is currently slow (no stereo used so not used)
 }
 
 //-----------------------------------------------------------------------------
@@ -196,13 +207,15 @@ static void init(struct patch *p) {
 	ps->reflection = -0.99f;
 	ps->release = 0.0f;
 	ps->stiffness = 1.0f;
-	ps->exciter_type = 0.0f;
+	ps->exciter_type = 0;
 	ps->exciter_loc = 0.25f;
 	ps->brightness = 1.0f;
 	ps->a = 0.0f;
 	ps->d = 2.0f;
 	ps->s = 1.0f;
 	ps->r = 1.0f;
+	ps->impulse_type = 0;
+	ps->impulse_solo = 0;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -212,53 +225,49 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 	DBG("p7 ctrl %d val %d\r\n", ctrl, val);
 
 	switch (ctrl) {
-	// case 75:		// volume
-	// 	ps->vol = midi_map(val, 0.f, 1.5f);
-	// 	update = 1;
-	// 	break;
-	// case 72:		// left/right pan
-	// 	ps->pan = midi_map(val, 0.f, 1.f);
-	// 	update = 1;
-	// 	break;
-	case 91:
+	case VOLUME_SLIDER:		// volume
+		ps->vol = midi_map(val, 0.f, 1.0f);
+		update = 1;
+		break;
+	case MODWHEEL:		// filter cutoff
+		svf2_ctrl_cutoff(&p->pmsynth->opf, midi_map(val, 0.f, 10000.0f));
+		break;
+	case KNOB_1: 		// filter resonance
+		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));
+		break;
+	case KNOB_2:
 		ps->reflection = midi_map(val, -0.95f, -1.0f);
 		update = 2;
 		break;
-	case 93:
+	case KNOB_3:
 		ps->stiffness = midi_map(val, 0.0f, 1.0f);
 		update = 3;
 		break;
-	case 74:
+	case KNOB_4:
 		ps->exciter_loc = midi_map(val, 0.08f, 0.5f);
 		update = 4;
 		break;
-	case 71: // exciter velocity
-		ps->brightness = midi_map(val, 0.05f, 1.0f);
-		update = 5;
-		break;
-	// case 73:
-	// 	ps->release = midi_map(val, 0.1f, 0.0f);
-	// 	break;
-	case 73:
+	case KNOB_5:
 		ps->a = midi_map(val, 0.0f, 0.5f);
 		update = 7;
 		break;
-	case 75:
+	case KNOB_6:
 		ps->d = midi_map(val, 0.02f, 5.f);
 		update = 7;
 		break;
-	case 72:
+	case KNOB_7:
 		ps->s = midi_map(val, 0.0f, 1.f);
 		update = 7;
 		break;
-	case 10:
+	case KNOB_8:
 		ps->r = midi_map(val, 0.0f, 4.f);
 		update = 7;
 		break;
-	case BUTTON_7:
-		stop_voices(p);
+	case BUTTON_1:
+		ps->exciter_type = 0;
+		goto_next_patch(p);
 		break;
-	case 96:
+	case BUTTON_2: //change resonator model (in this case changes the refection to invert)
 		ps->exciter_type += 1;
 		if (ps->exciter_type > 1){
 			ps->exciter_type = 0;
@@ -267,9 +276,34 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update_resonator();
 		update = 6;
 		break;
-	case 97:
-		ps->exciter_type = 0.0f;
-		goto_next_patch(p);
+	case BUTTON_3: //goto next impulse sample
+		ps->impulse_type += 1;
+		if (ps->impulse_type > NUM_IMPULSES){
+			ps->impulse_type = 0;
+		}
+		//update_impulse(ps->impulse_type);//TODO make this function!
+		update = 8;
+		break;
+	case BUTTON_4: //goto previous impulse sample
+		ps->impulse_type -= 1;
+		if (ps->impulse_type < 0){
+			ps->impulse_type = NUM_IMPULSES;
+		}
+		//update_impulse(ps->impulse_type);//TODO make this function!
+		update = 8;
+		break;
+	case BUTTON_5: //solo impulse sample (toggle)
+		ps->impulse_solo += 1;
+		if (ps->impulse_solo > 1){
+			ps->impulse_solo = 0;
+		}
+		update = 5;
+		break;
+	case BUTTON_6: //play demo song
+		//TODO add demo song functionality
+		break;
+	case BUTTON_7: //panic button!
+		stop_voices(p);
 		break;
 	default:
 		break;
@@ -287,13 +321,16 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update_voices(p, ctrl_exciter_loc);
 	}
 	if (update == 5) {
-		update_voices(p, ctrl_brightness);
+		update_voices(p, ctrl_impulse_solo);
 	}
 	if (update == 6) {
 		update_voices(p, ctrl_exciter_type);
 	}
 	if (update == 7) {
 		update_voices(p, ctrl_adsr);
+	}
+	if (update == 8) {
+		update_voices(p, ctrl_impulse_type);
 	}
 }
 

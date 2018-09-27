@@ -47,9 +47,11 @@ void ww_gen(struct ww *osc, float *out, size_t n) {
 	noise_gen_white(&osc->ns, breath, n);
 
 	block_mul(breath, am, n); // white noise following adsr
-	block_mul_k(breath, 0.0085f, n); // scaling white noise
+	//block_mul_k(breath, 0.0085f, n); // scaling white noise
+	block_mul_k(breath, osc->noise_amt, n); // scaling white noise
 
-	block_mul_k(vibrato, 0.008f, n); // scaling vibrato
+	//block_mul_k(vibrato, 0.008f, n); // scaling vibrato
+	block_mul_k(vibrato, osc->vibrato_amt, n); // scaling vibrato
 	block_add(breath, vibrato, n); // adding vibrato to white noise
 
 	block_add(breath, am, n); // adding to adsr to make pressure input
@@ -141,8 +143,9 @@ void ww_blow(struct ww *osc) {
 
 //-----------------------------------------------------------------------------
 
-void ww_ctrl_attenuate(struct ww *osc, float attenuate) {
-	//osc->k = 0.5f * attenuate;
+void ww_update_vib_noise(struct ww *osc, float vibrato_amt, float noise_amt) {
+	osc->vibrato_amt = vibrato_amt;
+	osc->noise_amt = noise_amt;
 }
 
 void ww_set_samplerate(struct ww *osc, float downsample_amt) {
