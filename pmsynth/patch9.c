@@ -120,6 +120,7 @@ static void stop(struct voice *v) {
 static void note_on(struct voice *v, uint8_t vel) {
 	//DBG("p9 note on v%d c%d n%d\r\n", v->idx, v->channel, v->note);
 	struct v_state *vs = (struct v_state *)v->state;
+	ww_set_velocity(&vs->ww, (float)vel / 127.f);
 	gpio_set(IO_LED_AMBER);
 	adsr_attack(&vs->ww.adsr);
 	ww_blow(&vs->ww);
@@ -142,7 +143,10 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 	struct v_state *vs = (struct v_state *)v->state;
 	float out[n];
 	ww_gen(&vs->ww, out, n);
-	pan_gen(&vs->pan, out_l, out_r, out, n);
+	block_copy(out_l, out, n);
+	block_mul_k(out_l, vs->pan.vol_l, n);
+	//block_copy(out_r, out, n);
+	//pan_gen(&vs->pan, out_l, out_r, out, n);
 }
 
 //-----------------------------------------------------------------------------
@@ -177,7 +181,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 1;
 		break;
 	case MODWHEEL:		// filter cutoff
-		svf2_ctrl_cutoff(&p->pmsynth->opf, midi_map(val, 0.f, 10000.0f));
+		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 0.f, 1.0f)));
 		break;
 	case KNOB_1: 		// filter resonance
 		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));

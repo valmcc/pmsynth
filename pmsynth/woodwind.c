@@ -17,15 +17,6 @@ Woodwind modelling (with the use of waveguides)
 
 //-----------------------------------------------------------------------------
 
-// frequency to x scaling (xrange/fs)
-#define WW_FSCALE ((float)(1ULL << 32) / AUDIO_FS)
-#define WW_FSCALE_2 ((float)(1ULL << 32) / (AUDIO_FS / 2.0f))
-
-#define WW_DELAY_MASK (WW_DELAY_SIZE - 1)
-#define WW_FRAC_BITS (32U - WW_DELAY_BITS)
-#define WW_FRAC_MASK ((1U << WW_FRAC_BITS) - 1)
-#define WW_FRAC_SCALE (float)(1.f / (float)(1ULL << WW_FRAC_BITS))
-
 #define R_1 0.42f
 #define R_2 0.53f
 #define FILTER_COEF 0.6f
@@ -120,8 +111,8 @@ void ww_gen(struct ww *osc, float *out, size_t n) {
 			//out[i] = breath[i];
 		} else
 		out[i] = out [i-1]; // sample and hold (least cpu)
-
 	}
+	block_mul_k(out, (osc->velocity / 0.8f + 0.2f), n);
 }
 
 //-----------------------------------------------------------------------------
@@ -142,6 +133,11 @@ void ww_blow(struct ww *osc) {
 }
 
 //-----------------------------------------------------------------------------
+
+void ww_set_velocity(struct ww *osc, float velocity) {
+	osc->velocity = velocity;
+	// velocity adjusts volume
+}
 
 void ww_update_vib_noise(struct ww *osc, float vibrato_amt, float noise_amt) {
 	osc->vibrato_amt = vibrato_amt;

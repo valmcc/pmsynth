@@ -174,8 +174,6 @@ void wg_ctrl_pos(struct wg *osc, float excite_loc) {
 
 void wg_ctrl_impulse_solo(struct wg *osc, int impulse_solo) {
 	osc->impulse_solo = impulse_solo;
-	//DBG("einc: %d\r\n", osc->einc);
-	// brightness (speed of exciter pluck)
 }
 
 void wg_set_velocity(struct wg *osc, float velocity) {

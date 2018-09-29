@@ -13,13 +13,6 @@ Banded waveguide model
 #include "logging.h"
 #include <math.h>
 //-----------------------------------------------------------------------------
-// frequency to x scaling (xrange/fs)
-#define KS_FSCALE ((float)(1ULL << 32) / AUDIO_FS)
-
-#define KS_DELAY_MASK (KS_DELAY_SIZE - 1)
-#define KS_FRAC_BITS (32U - KS_DELAY_BITS)
-#define KS_FRAC_MASK ((1U << KS_FRAC_BITS) - 1)
-#define KS_FRAC_SCALE (float)(1.f / (float)(1ULL << KS_FRAC_BITS))
 
 void wgb_gen(struct wgb *osc, float *out, size_t n) {
 	float am[n];
@@ -72,6 +65,7 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 					}
 				} else {
 				out[i] = out[i] * 0.5f + out[i-1] *0.5f; // linear interp on output when downsampling
+				osc->epos += 1; // incrementing impulse sample
 				}
 			}
 		//all pass filter for tuning!
@@ -86,21 +80,6 @@ void wgb_gen(struct wgb *osc, float *out, size_t n) {
 	//svf2_gen_lpf(&osc->opf, out, out, n, FILT_LOW_PASS);
 
 	block_mul_k(out, (osc->velocity / 0.8f + 0.2f), n);
-}
-
-//-----------------------------------------------------------------------------
-
-
-void wgb_ctrl_opf_freq(struct wgb *osc, float freq) {
-	// tuning the frequency to a reasonable range
-	freq *= 124.5;
-	freq = 440.0 * pow2((freq - 57.0)/12.0);
-	svf2_ctrl_cutoff(&osc->opf, freq);
-
-}
-void wgb_ctrl_opf_res(struct wgb *osc, float res) {
-	svf2_ctrl_resonance(&osc->opf, res);
-
 }
 
 
@@ -129,15 +108,37 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 
 	osc->freq = freq;
 	osc->mode[0].freq_coef = 1.0f;
-	//osc->mode[1].freq_coef = 2.756f;
-	//osc->mode[2].freq_coef = 5.404f;
-	float mode_1_freq = 4.0198391420f;
-	float mode_2_freq = 10.718498659f;
+	float mode_1_freq;
+	float mode_2_freq;
+
+	switch (osc->resonator_type) {
+		case 2:
+			mode_1_freq = 2.756f;
+			mode_2_freq = 5.404f;
+			break;
+		case 3:
+			mode_1_freq = 4.0198391420f;
+			mode_2_freq = 10.718498659f;
+			break;
+		case 4:
+			mode_1_freq = 3.0f;
+			mode_2_freq = 5.0f;
+			break;
+		case 5:
+			mode_1_freq = 1.5f;
+			mode_2_freq = 2.5f;
+			break;
+		default:
+			mode_1_freq = 2.756f;
+			mode_2_freq = 5.404f;
+			break;
+	}
+
 	float h_mod = osc->h_coef * 0.5f;
 	osc->mode[1].freq_coef = h_mod * mode_1_freq + mode_1_freq;
 	osc->mode[2].freq_coef = h_mod * mode_2_freq + mode_2_freq;
 	osc->mode[0].mix_factor = 1.0f - 0.2f * clampf(osc->brightness,0.8f, 1.0f); 
-	osc->mode[1].mix_factor = 1.2f * clampf(osc->brightness,0.f, 0.5f); 
+	osc->mode[1].mix_factor = 1.2f * clampf(osc->brightness,0.0f, 0.5f); 
 	osc->mode[2].mix_factor = 0.3f * osc->brightness; 
 
 	for (size_t i = 0; i < NUM_MODES; i++) {		
@@ -161,7 +162,7 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 		}
 		DBG("delay length for mode %d: %d.%d \r\n", i, osc->mode[i].delay_len, (uint32_t) osc->mode[i].delay_len_frac * 100.0f);
 		svf2_ctrl_cutoff(&osc->mode[i].bpf, osc->mode[i].freq_coef * freq * osc->mode[i].downsample_amt);
-		svf2_ctrl_resonance(&osc->mode[i].bpf, 0.4999999f);
+		svf2_ctrl_resonance(&osc->mode[i].bpf, 0.4999999f - osc->reflection_adjust);
 		
 		//DBG("downsample amount: %d delay length: %d\r\n", osc->mode[i].downsample_amt, osc->mode[i].delay_len);
 
@@ -169,13 +170,21 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 
 }
 
-void wgb_set_velocity(struct wgb *osc, float velocity) {
-	osc->velocity = velocity;
-	// velocity adjusts volume and brightness
+//-----------------------------------------------------------------------------
+
+void wgb_ctrl_impulse_type(struct wgb *osc, int impulse) {
+	osc->epos = 0;
+	osc->estate = 0;
+	osc->impulse = impulse;
 }
 
-void wgb_ctrl_brightness(struct wgb *osc, float brightness) {
-	osc->brightness = brightness;
+void wgb_set_velocity(struct wgb *osc, float velocity) {
+	osc->velocity = velocity;
+	// velocity adjusts volume
+}
+
+void wgb_ctrl_reflection_adjust(struct wgb *osc, float reflection_adjust) {
+	osc->reflection_adjust = reflection_adjust;
 }
 
 void wgb_ctrl_harmonic_mod(struct wgb *osc, float h_coef) {
@@ -184,6 +193,18 @@ void wgb_ctrl_harmonic_mod(struct wgb *osc, float h_coef) {
 
 void wgb_ctrl_mode_mix_amt(struct wgb *osc, float mode_mix_amt) {
 	osc->mode_mix_amt = mode_mix_amt;
+}
+
+void wgb_ctrl_impulse_solo(struct wgb *osc, int impulse_solo) {
+	osc->impulse_solo = impulse_solo;
+}
+
+void wgb_ctrl_brightness(struct wgb *osc, float brightness) {
+	osc->brightness = brightness;
+}
+
+void wgb_ctrl_resonator_type(struct wgb *osc, int resonator_type) {
+	osc->resonator_type = resonator_type;
 }
 
 void wgb_init(struct wgb *osc) {

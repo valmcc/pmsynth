@@ -192,7 +192,8 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 	float out[n];
 	wg_gen(&vs->wg, out, n);
 	block_copy(out_l, out, n);
-	block_copy(out_r, out, n);
+	block_mul_k(out_l, vs->pan.vol_l, n);
+	//block_copy(out_r, out, n);
 	//pan_gen(&vs->pan, out_l, out_r, out, n); // pan function is currently slow (no stereo used so not used)
 }
 
@@ -230,7 +231,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 1;
 		break;
 	case MODWHEEL:		// filter cutoff
-		svf2_ctrl_cutoff(&p->pmsynth->opf, midi_map(val, 0.f, 10000.0f));
+		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 0.f, 1.0f)));
 		break;
 	case KNOB_1: 		// filter resonance
 		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));

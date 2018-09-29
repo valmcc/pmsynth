@@ -5244,14 +5244,14 @@ float impulse_gen(struct wg *osc) {
 float impulse_gen_wgb(struct wgb *osc) {
 	//"speed" is osc->espeed
 	// now in integers for speed (surprise! no performance increase here!)
-	if (osc->epos <= MALLET_LUT_MASK) {
-			osc->epos += 1;
-	} else {
-		osc->estate = 0; 
-		osc->epos = 0; 
-		// if it passes the end of the sample
-		// it is no longer in the excitement state
-	}
+	// if (osc->epos <= MALLET_LUT_MASK) {
+	// 		osc->epos += 1;
+	// } else {
+	// 	osc->estate = 0; 
+	// 	osc->epos = 0; 
+	// 	// if it passes the end of the sample
+	// 	// it is no longer in the excitement state
+	// }
 	return impulse_lookup(osc->epos, osc->impulse, &osc->epos, &osc->estate);
 	// step one data point along the sample
 }
@@ -5259,14 +5259,14 @@ float impulse_gen_wgb(struct wgb *osc) {
 float impulse_gen_2d(struct wg_2d *osc) {
 	//"speed" is osc->espeed
 	// now in integers for speed (surprise! no performance increase here!)
-	if (osc->epos <= MALLET_LUT_MASK) {
-			osc->epos += 1;
-	} else {
-		osc->estate = 0; 
-		osc->epos = 0; 
-		// if it passes the end of the sample
-		// it is no longer in the excitement state
-	}
+	// if (osc->epos <= MALLET_LUT_MASK) {
+	// 		osc->epos += 1;
+	// } else {
+	// 	osc->estate = 0; 
+	// 	osc->epos = 0; 
+	// 	// if it passes the end of the sample
+	// 	// it is no longer in the excitement state
+	// }
 	return impulse_lookup(osc->epos, osc->impulse, &osc->epos, &osc->estate);
 	// step one data point along the sample
 }

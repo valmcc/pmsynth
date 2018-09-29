@@ -31,7 +31,7 @@ Physical Modelling Synthesizer
 // Button mappings for midi keyboard
 
 #define MODWHEEL 1
-#define VOLUME_SLIDER 8
+#define VOLUME_SLIDER 7
 
 #define KNOB_1 91
 #define KNOB_2 93
@@ -48,7 +48,7 @@ Physical Modelling Synthesizer
 #define BUTTON_4 67
 #define BUTTON_5 64
 #define BUTTON_6 65
-#define BUTTON_7 7
+#define BUTTON_7 8
 #define BUTTON_8 10
 
 // number of simultaneous voices
@@ -85,6 +85,7 @@ float pow2_int(int x);
 float pow2_frac(float x);
 float pow2(float x);
 float powe(float x);
+float logmap(float x);
 
 //-----------------------------------------------------------------------------
 // Panning
@@ -234,10 +235,12 @@ struct ww {
 	float lp_filter_coef;
 	float noise_amt;
 	float vibrato_amt;
+	float velocity;
 
 };
 
 void ww_init(struct ww *osc);
+void ww_set_velocity(struct ww *osc, float velocity);
 void ww_set_samplerate(struct ww *osc, float downsample_amt);
 void ww_ctrl_frequency(struct ww *osc, float freq);
 void ww_ctrl_attenuate(struct ww *osc, float attenuate);
@@ -562,11 +565,11 @@ struct wgb {
 	float brightness;
 	float mode_mix_amt;
 	float h_coef;
-	float out_filt_freq;
-	float out_filt_res;
-	struct svf2 opf; // filter for the output
 	int exciter;
 	int impulse;
+	float reflection_adjust;
+	float impulse_solo;
+	int resonator_type;
 };
 // for exciter!
 float impulse_gen_wgb(struct wgb *osc);
@@ -580,9 +583,11 @@ void wgb_ctrl_brightness(struct wgb *osc, float brightness);
 void wgb_ctrl_mode_mix_amt(struct wgb *osc, float mode_mix_amt);
 void wgb_set_velocity(struct wgb *osc, float velocity);
 void wgb_ctrl_harmonic_mod(struct wgb *osc, float h_coef);
-// for output filter
-void wgb_ctrl_opf_freq(struct wgb *osc, float freq);
-void wgb_ctrl_opf_res(struct wgb *osc, float res);
+void wgb_ctrl_reflection_adjust(struct wgb *osc, float reflection_adjust);
+void wgb_ctrl_impulse_solo(struct wgb *osc, int impulse_solo);
+void wgb_ctrl_impulse_type(struct wgb *osc, int impulse);
+void wgb_ctrl_brightness(struct wgb *osc, float brightness) ;
+void wgb_ctrl_resonator_type(struct wgb *osc, int resonator_type);
 
 //-----------------------------------------------------------------------------
 // Handler functions

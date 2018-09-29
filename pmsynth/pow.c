@@ -72,4 +72,13 @@ float powe(float x) {
 	return pow2(LOG_E2 * x);
 }
 
+#define LOG_200 (5.29831736655f)
+#define LOG_15000 (9.61580548008f)
+// return  exp(ln(40) + knob * (ln(15000) - ln(40))) // for freq range of 40Hz to 15000Hz
+
+float logmap(float x) {
+	return powe(LOG_200 + x * (LOG_15000 - LOG_200));
+}
+
+
 //-----------------------------------------------------------------------------

@@ -63,7 +63,7 @@ void stop_voices(struct patch *p) {
 			v->patch->ops->stop(v);
 		}
 
-		//voice_alloc(p->pmsynth, 5, 42); // overwrites all voices with a dummy voice (channel 5)
+		voice_alloc(p->pmsynth, 5, 42); // overwrites all voices with a dummy voice (channel 5)
 	}
 	p->pmsynth->voice_idx = 0;
 }
@@ -130,7 +130,7 @@ static void audio_handler(struct pmsynth *s, struct event *e) {
 			p->ops->generate(v, buf_l, buf_r, n);
 			// accumulate in the output buffers
 			block_add(out_l, buf_l, n);
-			block_add(out_r, buf_r, n);
+			//block_add(out_r, buf_r, n);
 		}
 	}
 	// apply output lowpass filter
@@ -202,10 +202,10 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 
 	// setup the patch operations
 	s->patches[0].ops = &patch7;
-	s->patches[1].ops = &patch2;
+	s->patches[1].ops = &patch10;
 	s->patches[2].ops = &patch9;
-	s->patches[3].ops = &patch10;
-	//s->patches[2].ops = &patch1;
+	s->patches[3].ops = &patch2;
+	s->patches[5].ops = &patch6;
 	//s->patches[3].ops = &patch3;
 	//s->patches[4].ops = &patch5;
 	//s->patches[5].ops = &patch6;
