@@ -160,7 +160,7 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 			osc->mode[i].delay_len  = (uint32_t) osc->mode[i].delay_len_total;
 			osc->mode[i].delay_len_frac = osc->mode[i].delay_len_total - (float) osc->mode[i].delay_len;
 		}
-		DBG("delay length for mode %d: %d.%d \r\n", i, osc->mode[i].delay_len, (uint32_t) osc->mode[i].delay_len_frac * 100.0f);
+		//DBG("delay length for mode %d: %d.%d \r\n", i, osc->mode[i].delay_len, (uint32_t) osc->mode[i].delay_len_frac * 100.0f);
 		svf2_ctrl_cutoff(&osc->mode[i].bpf, osc->mode[i].freq_coef * freq * osc->mode[i].downsample_amt);
 		svf2_ctrl_resonance(&osc->mode[i].bpf, 0.4999999f - osc->reflection_adjust);
 		

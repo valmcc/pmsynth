@@ -165,6 +165,7 @@ static void note_on(struct voice *v, uint8_t vel) {
 	wg_ctrl_pos(&vs->wg, ps->exciter_loc);
 	wg_excite(&vs->wg);
 	
+	
 	} else{
 		DBG("note too low to handle!");
 	}

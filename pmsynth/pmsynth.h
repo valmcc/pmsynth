@@ -401,6 +401,7 @@ int event_wr(uint32_t type, void *ptr);
 
 struct voice {
 	int idx;		// index in table
+	int note_on;	// is this key currently being pressed?
 	uint8_t note;		// current note
 	uint8_t channel;	// current channel
 	struct patch *patch;	// patch in use
@@ -464,7 +465,7 @@ struct pmsynth {
 	struct seq seq0;	// note sequencer
 	struct patch patches[NUM_CHANNELS];	// current patch set
 	struct voice voices[NUM_VOICES];	// voices
-	int voice_idx;		// FIXME round robin voice allocation
+	int voice_idx;		// round robin voice allocation
 	struct svf2 opf; // filter for the output
 };
 

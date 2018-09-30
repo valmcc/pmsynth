@@ -36,12 +36,16 @@ struct voice *voice_alloc(struct pmsynth *s, uint8_t channel, uint8_t note) {
 	}
 	// TODO: Currently doing simple round robin allocation.
 	// More intelligent voice allocation to follow....
-	struct voice *v = &s->voices[s->voice_idx];
+
+
 	s->voice_idx += 1;
-	//if (s->voice_idx == NUM_VOICES) {
-	if (s->voice_idx >= global_polyphony) {
+	if (s->voice_idx > global_polyphony) {
 		s->voice_idx = 0;
 	}
+
+	struct voice *v = &s->voices[s->voice_idx];
+
+
 	// stop an existing patch on this voice
 	if (v->patch) {
 		v->patch->ops->stop(v);
