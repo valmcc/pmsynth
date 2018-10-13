@@ -112,21 +112,21 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 	float mode_2_freq;
 
 	switch (osc->resonator_type) {
-		case 2:
+		case 3:
 			mode_1_freq = 2.756f;
 			mode_2_freq = 5.404f;
 			break;
-		case 3:
+		case 4:
 			mode_1_freq = 4.0198391420f;
 			mode_2_freq = 10.718498659f;
 			break;
-		case 4:
-			mode_1_freq = 3.0f;
-			mode_2_freq = 5.0f;
-			break;
 		case 5:
-			mode_1_freq = 1.5f;
-			mode_2_freq = 2.5f;
+			mode_1_freq = 3.16f;
+			mode_2_freq = 2.24f;
+			break;
+		case 6:
+			mode_1_freq = 1.58f;
+			mode_2_freq = 2.55f;
 			break;
 		default:
 			mode_1_freq = 2.756f;

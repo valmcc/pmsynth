@@ -61,7 +61,7 @@ static void ctrl_frequency(struct voice *v) {
 	if (v->note < 33){
 		wg_set_samplerate(&vs->wg,4); // quarter sample rate
 	}
-	wg_ctrl_frequency(&vs->wg, midi_to_frequency((float)v->note + ps->bend));
+	wg_ctrl_frequency(&vs->wg, midi_to_frequency((float)v->note - ps->bend));
 }
 
 static void ctrl_reflection(struct voice *v) {
@@ -232,7 +232,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 1;
 		break;
 	case MODWHEEL:		// filter cutoff
-		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 0.f, 1.0f)));
+		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 1.0f, 0.0f)));
 		break;
 	case KNOB_1: 		// filter resonance
 		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));
@@ -267,6 +267,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		break;
 	case BUTTON_1:
 		ps->exciter_type = 0;
+		current_resonator_type = 3;
 		goto_next_patch(p);
 		break;
 	case BUTTON_2: //change resonator model (in this case changes the refection to invert)

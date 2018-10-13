@@ -59,6 +59,7 @@ void adsr_release(struct adsr *e) {
 
 // Enter idle state.
 void adsr_idle(struct adsr *e) {
+	gpio_clr(IO_RELEASE_LED);
 	e->val = 0.f;
 	e->state = ADSR_STATE_IDLE;
 }
@@ -106,11 +107,14 @@ static float adsr_sample(struct adsr *e) {
 		}
 		break;
 	case ADSR_STATE_SUSTAIN:
+		gpio_clr(IO_ATTACK_LED);
 		gpio_set(IO_SUSTAIN_LED);
 		gpio_clr(IO_DECAY_LED);
 		// sustain - do nothing
 		break;
 	case ADSR_STATE_RELEASE:
+		gpio_clr(IO_ATTACK_LED);
+		gpio_clr(IO_DECAY_LED);
 		gpio_set(IO_RELEASE_LED);
 		gpio_clr(IO_SUSTAIN_LED);
 		// release until idle level

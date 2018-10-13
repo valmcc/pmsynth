@@ -48,8 +48,8 @@ Physical Modelling Synthesizer
 #define BUTTON_4 67
 #define BUTTON_5 64
 #define BUTTON_6 65
-#define BUTTON_7 8
-#define BUTTON_8 10
+#define BUTTON_7 45
+#define BUTTON_8 36
 
 // number of simultaneous voices
 #define NUM_VOICES 12 // Max number of voices (polyphony)
@@ -401,7 +401,6 @@ int event_wr(uint32_t type, void *ptr);
 
 struct voice {
 	int idx;		// index in table
-	int note_on;	// is this key currently being pressed?
 	uint8_t note;		// current note
 	uint8_t channel;	// current channel
 	struct patch *patch;	// patch in use
@@ -465,7 +464,7 @@ struct pmsynth {
 	struct seq seq0;	// note sequencer
 	struct patch patches[NUM_CHANNELS];	// current patch set
 	struct voice voices[NUM_VOICES];	// voices
-	int voice_idx;		// round robin voice allocation
+	int voice_idx;		// FIXME round robin voice allocation
 	struct svf2 opf; // filter for the output
 };
 

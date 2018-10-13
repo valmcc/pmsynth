@@ -52,7 +52,7 @@ _Static_assert(sizeof(struct p_state) <= PATCH_STATE_SIZE, "sizeof(struct p_stat
 static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	wgb_ctrl_frequency(&vs->wgb, midi_to_frequency((float)v->note + ps->bend));
+	wgb_ctrl_frequency(&vs->wgb, midi_to_frequency((float)v->note - ps->bend));
 }
 
 static void ctrl_reflection(struct voice *v) {
@@ -207,7 +207,7 @@ static void init(struct patch *p) {
 	ps->r = 1.0f;
 	ps->mode_mix_amt = 0.1f;
 	ps->h_coef = 0.f;
-	ps->resonator_type = 2;
+	ps->resonator_type = 3;
 }
 
 static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
@@ -222,7 +222,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 1;
 		break;
 	case MODWHEEL:		// filter cutoff
-		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 0.f, 1.0f)));
+		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 1.0f, 0.0f)));
 		break;
 	case KNOB_1: 		// filter resonance
 		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));
@@ -232,11 +232,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		ps->brightness = midi_map(val,0.0f, 1.0f);
 		update = 2;
 		break;
-	case KNOB_3: // harmonic mod
+	case KNOB_4: // harmonic mod
 		ps->h_coef = midi_map(val, -1.0f, 1.0f);
 		update = 4;
 		break;
-	case KNOB_4: // mode mixing
+	case KNOB_3: // mode mixing
 		ps->mode_mix_amt = midi_map(val, 0.0f, 1.0f);
 		update = 3;
 		break;
@@ -262,8 +262,8 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		break;
 	case BUTTON_2: //change resonator model 
 		ps->resonator_type += 1;
-		if (ps->resonator_type > 5){
-			ps->resonator_type = 2;
+		if (ps->resonator_type > 6){
+			ps->resonator_type = 3;
 		}
 		current_resonator_type = ps->resonator_type;
 		update_resonator();

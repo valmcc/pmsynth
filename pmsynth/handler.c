@@ -658,12 +658,24 @@ void update_resonator(){
 			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,flute_image);
 			break;
 		case XYLOPHONE:
+			term_print(&pmsynth_display.term, "Marimba\n",4);
+			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,xylophone_image);
+			break;
+		case XYLOPHONE+1:
 			term_print(&pmsynth_display.term, "Xylophone\n",4);
 			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,xylophone_image);
 			break;
+		case XYLOPHONE+2:
+			term_print(&pmsynth_display.term, "Square Plate 1\n",4);
+			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,xylophone_image);
+			break;
+		case XYLOPHONE+3:
+			term_print(&pmsynth_display.term, "Square Plate 2\n",4);
+			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,xylophone_image);
+			break;
 		default:
-			term_print(&pmsynth_display.term, "String\n",4);
-			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,harp_image);
+			term_print(&pmsynth_display.term, "Xylophone\n",4);
+			lcd_draw_bitmap(&pmsynth_display.lcd,180,120,100,100,LCD_COLOR_BLACK,LCD_COLOR_WHITE,xylophone_image);
 			break;
 	break;
 	}
@@ -708,7 +720,7 @@ void update_polyphony(){
 			global_polyphony = 11; 
 		break;
 		case KARPLUS_STRONG:
-			global_polyphony = 12;
+			global_polyphony = 11;
 		break;
 		case WOODWIND:
 			global_polyphony = 8;
@@ -717,7 +729,7 @@ void update_polyphony(){
 			global_polyphony = 4;
 		break;
 		default:
-			global_polyphony = 12;
+			global_polyphony = 11;
 		break;
 	}
 }

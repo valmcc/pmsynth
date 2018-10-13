@@ -55,7 +55,7 @@ static void ctrl_frequency(struct voice *v) {
 	if (v->note < 41){
 		ww_set_samplerate(&vs->ww,4); // quarter sample rate
 	}
-	ww_ctrl_frequency(&vs->ww, midi_to_frequency((float)v->note + ps->bend));
+	ww_ctrl_frequency(&vs->ww, midi_to_frequency((float)v->note - ps->bend));
 }
 
 static void ctrl_pan(struct voice *v) {
@@ -154,7 +154,7 @@ static void generate(struct voice *v, float *out_l, float *out_r, size_t n) {
 
 static void init(struct patch *p) {
 	struct p_state *ps = (struct p_state *)p->state;
-	ps->vol = 0.3f;
+	ps->vol = 0.1f;
 	ps->pan = 0.5f;
 	ps->bend = 0.f;
 	ps->attenuate = 0.99f;
@@ -177,11 +177,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 
 	switch (ctrl) {
 	case VOLUME_SLIDER:		// volume
-		ps->vol = midi_map(val, 0.f, 0.4f);
+		ps->vol = midi_map(val, 0.f, 0.2f);
 		update = 1;
 		break;
 	case MODWHEEL:		// filter cutoff
-		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 0.f, 1.0f)));
+		svf2_ctrl_cutoff(&p->pmsynth->opf, logmap(midi_map(val, 1.0f, 0.0f)));
 		break;
 	case KNOB_1: 		// filter resonance
 		svf2_ctrl_resonance(&p->pmsynth->opf, midi_map(val, 0.f, 0.98f));

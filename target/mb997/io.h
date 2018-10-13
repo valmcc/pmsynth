@@ -40,10 +40,10 @@ IO Pin Assignments
 #define IO_LED_RED        GPIO_NUM(PORTD, 14)	// GPIO: red led
 #define IO_LED_BLUE       GPIO_NUM(PORTD, 15)	// GPIO: blue led
 
-#define IO_ATTACK_LED       GPIO_NUM(PORTE, 4)	// GPIO: front panel (attack)
-#define IO_DECAY_LED       GPIO_NUM(PORTE, 5)	// GPIO: front panel (decay)
-#define IO_SUSTAIN_LED       GPIO_NUM(PORTE, 6)	// GPIO: front panel (sustain)
-#define IO_RELEASE_LED       GPIO_NUM(PORTC, 13)	// GPIO: front panel (release)
+#define IO_ATTACK_LED       GPIO_NUM(PORTC, 13)	// GPIO: front panel (attack)
+#define IO_DECAY_LED       GPIO_NUM(PORTE, 6)	// GPIO: front panel (decay)
+#define IO_SUSTAIN_LED       GPIO_NUM(PORTE, 5)	// GPIO: front panel (sustain)
+#define IO_RELEASE_LED       GPIO_NUM(PORTE, 4)	// GPIO: front panel (release)
 
 //-----------------------------------------------------------------------------
 
