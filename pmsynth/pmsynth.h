@@ -192,6 +192,7 @@ struct ks {
 	float k;		// attenuation and averaging constant 0 to 0.5
 	uint32_t x;		// phase position
 	uint32_t xstep;		// phase step per sample
+	struct adsr adsr;
 };
 
 void ks_init(struct ks *osc);

@@ -1,6 +1,8 @@
 //-----------------------------------------------------------------------------
 /*
 
+This is heavily based of Jason Harris' Karplus Strong code. Only minor additions have been made.
+
 Karplus Strong Plucked String Modelling
 
 KS generally has a delay line buffer size that determines the fundamental frequency
@@ -34,6 +36,8 @@ we do the low pass filtering on it (in this case simple averaging).
 //-----------------------------------------------------------------------------
 
 void ks_gen(struct ks *osc, float *out, size_t n) {
+	float am[n];
+	adsr_gen(&osc->adsr, am, n);
 	for (size_t i = 0; i < n; i++) {
 		unsigned int x0 = osc->x >> KS_FRAC_BITS;
 		unsigned int x1 = (x0 + 1) & KS_DELAY_MASK;
@@ -49,6 +53,7 @@ void ks_gen(struct ks *osc, float *out, size_t n) {
 			osc->delay[x0] = osc->k * (y0 + y1);
 		}
 	}
+	block_mul(out, am, n);
 }
 
 //-----------------------------------------------------------------------------

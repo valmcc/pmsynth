@@ -201,11 +201,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 5;
 		break;
 	case KNOB_5:
-		ps->a = midi_map(val, 0.05f, 3.f);
+		ps->a = midi_map(val, 0.0f, 3.f);
 		update = 3;
 		break;
 	case KNOB_6:
-		ps->d = midi_map(val, 0.0f, 3.f);
+		ps->d = midi_map(val, 0.02f, 1.f);
 		update = 3;
 		break;
 	case KNOB_7:

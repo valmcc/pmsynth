@@ -59,12 +59,8 @@ SRC += $(SYNTH_DIR)/sin.c \
 	$(SYNTH_DIR)/block.c \
 	$(SYNTH_DIR)/pow.c \
 	$(SYNTH_DIR)/bmark.c \
-	$(SYNTH_DIR)/patch0.c \
-	$(SYNTH_DIR)/patch1.c \
 	$(SYNTH_DIR)/patch2.c \
-	$(SYNTH_DIR)/patch3.c \
 	$(SYNTH_DIR)/patch4.c \
-	$(SYNTH_DIR)/patch5.c \
 	$(SYNTH_DIR)/patch6.c \
 	$(SYNTH_DIR)/patch7.c \
 	$(SYNTH_DIR)/waveguide.c \

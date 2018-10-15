@@ -213,7 +213,7 @@ static void init(struct patch *p) {
 	ps->exciter_loc = 0.25f;
 	ps->brightness = 1.0f;
 	ps->a = 0.0f;
-	ps->d = 2.0f;
+	ps->d = 1.0f;
 	ps->s = 1.0f;
 	ps->r = 1.0f;
 	ps->impulse_type = 0;
@@ -254,7 +254,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 7;
 		break;
 	case KNOB_6:
-		ps->d = midi_map(val, 0.02f, 5.f);
+		ps->d = midi_map(val, 0.02f, 1.f);
 		update = 7;
 		break;
 	case KNOB_7:
@@ -262,7 +262,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 7;
 		break;
 	case KNOB_8:
-		ps->r = midi_map(val, 0.0f, 4.f);
+		ps->r = midi_map(val, 0.0f, 1.f);
 		update = 7;
 		break;
 	case BUTTON_1:

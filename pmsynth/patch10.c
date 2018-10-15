@@ -203,7 +203,7 @@ static void init(struct patch *p) {
 	ps->bp_res = 0.499f;
 	ps->brightness = 1.0f;
 	ps->a = 0.0f;
-	ps->d = 2.0f;
+	ps->d = 1.0f;
 	ps->s = 1.0f;
 	ps->r = 1.0f;
 	ps->mode_mix_amt = 0.1f;
@@ -242,11 +242,11 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 3;
 		break;
 	case KNOB_5:
-		ps->a = midi_map(val, 0.0f, 5.f);
+		ps->a = midi_map(val, 0.0f, 0.5f);
 		update = 7;
 		break;
 	case KNOB_6:
-		ps->d = midi_map(val, 0.02f, 4.f);
+		ps->d = midi_map(val, 0.02f, 1.f);
 		update = 7;
 		break;
 	case KNOB_7:
@@ -254,7 +254,7 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 7;
 		break;
 	case KNOB_8:
-		ps->r = midi_map(val, 0.0f, 4.f);
+		ps->r = midi_map(val, 0.0f, 1.f);
 		update = 7;
 		break;
 	case BUTTON_1:
