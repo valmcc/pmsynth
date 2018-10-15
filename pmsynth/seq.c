@@ -67,7 +67,8 @@ struct rest_args {
 
 // process a sequencer note off event
 static void seq_note_off(struct seq *s, struct note_args *args) {
-	struct voice *v = voice_lookup(s->pmsynth, args->chan, args->note);
+	//struct voice *v = voice_lookup(s->pmsynth, args->chan, args->note);
+	struct voice *v = voice_lookup(s->pmsynth, current_patch_no, args->note);
 	if (v) {
 		v->patch->ops->note_off(v, 0);
 	}
@@ -75,9 +76,12 @@ static void seq_note_off(struct seq *s, struct note_args *args) {
 
 // process a sequencer note on event
 static void seq_note_on(struct seq *s, struct note_args *args) {
-	struct voice *v = voice_lookup(s->pmsynth, args->chan, args->note);
+	//struct voice *v = voice_lookup(s->pmsynth, args->chan, args->note);
+	struct voice *v = voice_lookup(s->pmsynth, current_patch_no, args->note);
+	
 	if (!v) {
-		v = voice_alloc(s->pmsynth, args->chan, args->note);
+		//v = voice_alloc(s->pmsynth, args->chan, args->note);
+		v = voice_alloc(s->pmsynth, current_patch_no, args->note);
 	}
 	if (v) {
 		v->patch->ops->note_on(v, args->vel);
@@ -176,46 +180,117 @@ static uint8_t metronome[] = {
 */
 
 static uint8_t tune[] = {
-	//OP_NOTE, 0, 46, 100, 4,
-	//OP_NOTE, 0, 70, 100, 4,
-	//OP_NOTE, 0, 66, 100, 4,
-	
-	//OP_NOTE, 0, 58, 100, 4,
-	//OP_NOTE, 0, 46, 100, 4,
-	// OP_REST, 16,
-	// OP_NOTE, 0, 71, 100, 4,
-	// //OP_NOTE, 0, 66, 100, 4,
-	OP_NOTE, 0, 60, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 61, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 62, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 63, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 64, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 65, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 66, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 67, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 68, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 69, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 70, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 71, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 72, 100, 4,
-	OP_REST, 16,
-	OP_NOTE, 0, 73, 100, 4,
-	OP_REST, 16,
+	OP_REST, 4,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 81, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
 	OP_NOTE, 0, 74, 100, 4,
-	OP_REST, 16,
+	OP_NOTE, 0, 74, 100, 52,
+
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 79, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 71, 100, 8,
+	OP_NOTE, 0, 72, 100, 32,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 65, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 24,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 64, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 71, 100, 8,
+	OP_NOTE, 0, 72, 100, 16,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 62, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 79, 100, 16,
+	OP_NOTE, 0, 72, 100, 8,
+
+	OP_NOTE, 0, 74, 100, 32,
+	OP_NOTE, 0, 62, 100, 32,
+
+	OP_NOTE, 0, 64, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 76, 100, 8,
+	OP_NOTE, 0, 81, 100, 8,
+
+	OP_NOTE, 0, 43, 100, 8,
+	OP_NOTE, 0, 53, 100, 8,
+	OP_NOTE, 0, 55, 100, 8,
+	OP_NOTE, 0, 62, 100, 40,
+
+	OP_NOTE, 0, 52, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 74, 100, 8,
+	OP_NOTE, 0, 79, 100, 8,
+
+	OP_NOTE, 0, 48, 100, 8,
+	OP_NOTE, 0, 57, 100, 8,
+	OP_NOTE, 0, 59, 100, 8,
+	OP_NOTE, 0, 60, 100, 32,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 65, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 24,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 64, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 71, 100, 8,
+	OP_NOTE, 0, 72, 100, 16,
+	OP_NOTE, 0, 69, 100, 4,
+	OP_NOTE, 0, 71, 100, 4,
+
+	OP_NOTE, 0, 63, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 72, 100, 8,
+	OP_NOTE, 0, 79, 100, 16,
+	OP_NOTE, 0, 77, 100, 4,
 	OP_NOTE, 0, 75, 100, 4,
+
+	OP_NOTE, 0, 74, 100, 32,
 	 OP_REST, 32,
 	// OP_NOTE, 0, 82, 100, 4,
 	//OP_NOTE, 0, 61, 100, 4,
@@ -244,7 +319,7 @@ void seq_exec(struct seq *s) {
 
 int seq_init(struct seq *s) {
 
-	s->beats_per_min = 120.f;
+	s->beats_per_min = 100.f;
 	s->secs_per_tick = SECS_PER_MIN / (s->beats_per_min * (float)TICKS_PER_BEAT);
 	DBG("secs_per_tick %08x\r\n", *(uint32_t *) & s->secs_per_tick);
 
@@ -252,7 +327,7 @@ int seq_init(struct seq *s) {
 	DBG("secs_per_block %08x\r\n", *(uint32_t *) & secs_per_block);
 
 	s->m0.prog = tune;
-	//s->m0.s_state = S_STATE_RUN;
+	s->m0.s_state = S_STATE_RUN;
 	s->m0.s_state = S_STATE_STOP;
 
 	return 0;

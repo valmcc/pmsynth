@@ -243,13 +243,13 @@ int pmsynth_init(struct pmsynth *s, struct audio_drv *audio, struct usart_drv *s
 	update_patch();
 	update_exciter();
 	update_resonator();
-	// setup the sequencer
-	//rc = seq_init(&s->seq0);
-	//if (rc != 0) {
-	// 	DBG("seq_init failed %d\r\n", rc);
-	// 	goto exit;
-	// }
-	// s->seq0.pmsynth = s;
+	//setup the sequencer
+	rc = seq_init(&s->seq0);
+	if (rc != 0) {
+		DBG("seq_init failed %d\r\n", rc);
+		goto exit;
+	}
+	s->seq0.pmsynth = s;
 
  exit:
 	return rc;

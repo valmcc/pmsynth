@@ -140,7 +140,7 @@ void wgb_ctrl_frequency(struct wgb *osc, float freq) {
 	osc->mode[0].mix_factor = 1.0f - 0.2f * clampf(osc->brightness,0.8f, 1.0f); 
 	osc->mode[1].mix_factor = 1.2f * clampf(osc->brightness,0.0f, 0.5f); 
 	osc->mode[2].mix_factor = 0.3f * osc->brightness; 
-
+	
 	for (size_t i = 0; i < NUM_MODES; i++) {		
 
 		uint32_t delay_len = AUDIO_FS/(osc->mode[i].freq_coef * freq);

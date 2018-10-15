@@ -48,11 +48,12 @@ _Static_assert(sizeof(struct p_state) <= PATCH_STATE_SIZE, "sizeof(struct p_stat
 
 //-----------------------------------------------------------------------------
 // control functions
+#define FREQ_OFFSET_ADJUST 0.25f
 
 static void ctrl_frequency(struct voice *v) {
 	struct v_state *vs = (struct v_state *)v->state;
 	struct p_state *ps = (struct p_state *)v->patch->state;
-	wgb_ctrl_frequency(&vs->wgb, midi_to_frequency((float)v->note - ps->bend));
+	wgb_ctrl_frequency(&vs->wgb, midi_to_frequency((float)v->note - ps->bend + FREQ_OFFSET_ADJUST));
 }
 
 static void ctrl_reflection(struct voice *v) {
@@ -293,8 +294,18 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 5;
 		break;
 	case BUTTON_6: //play demo song
-		//TODO add demo song functionality
-		break;
+			switch(p->pmsynth->seq0.m0.s_state){
+				case 0:
+					p->pmsynth->seq0.m0.s_state = 1;
+					break;
+				case 1:
+					p->pmsynth->seq0.m0.s_state = 0;
+					break;
+				default:
+					p->pmsynth->seq0.m0.s_state = 0;
+					break;
+			break;
+		}
 	case BUTTON_7: //panic button!
 		stop_voices(p);
 		break;

@@ -303,7 +303,17 @@ static void control_change(struct patch *p, uint8_t ctrl, uint8_t val) {
 		update = 5;
 		break;
 	case BUTTON_6: //play demo song
-		//TODO add demo song functionality
+		switch(p->pmsynth->seq0.m0.s_state){
+			case 0:
+				p->pmsynth->seq0.m0.s_state = 1;
+				break;
+			case 1:
+				p->pmsynth->seq0.m0.s_state = 0;
+				break;
+			default:
+				p->pmsynth->seq0.m0.s_state = 0;
+				break;
+		}
 		break;
 	case BUTTON_7: //panic button!
 		stop_voices(p);
